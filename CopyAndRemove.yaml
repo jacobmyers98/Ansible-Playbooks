@@ -1,0 +1,35 @@
+---
+# ansible-playbook -u 'username' Playbooks/CopyAndRemove.yaml -l 'hostname' --connection=local
+- hosts: all
+  become: false
+  tasks:
+  - name: Get status of file in Directory
+    ansible.builtin.stat:
+      path: ~/TestDir/test.txt
+    register: status
+
+  - name: Fail if file isnt there
+    ansible.builtin.fail:
+      msg: Your file isnt there
+    when: status.stat.exists is false
+
+  - name: Copy to Directory 2
+    copy:
+      src: ~/TestDir/test.txt
+      dest: ~/TestDir2/
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: remove old files
+    file:
+      path: ~/TestDir/test.txt
+      state: absent
+      
+  - name: Finding local hostname
+    shell: "hostname"
+    register: hostname
+
+  - name: Print report
+    ansible.builtin.debug:
+      msg: "files on {{ hostname.stdout }}"
