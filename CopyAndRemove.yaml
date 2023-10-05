@@ -8,7 +8,7 @@
       path: ~/TestDir/test.txt
     register: status
 
-  - name: Fail if file isnt there
+  - name: Failure parameter
     ansible.builtin.fail:
       msg: Your file isnt there
     when: status.stat.exists is false
@@ -32,4 +32,4 @@
 
   - name: Print report
     ansible.builtin.debug:
-      msg: "files on {{ hostname.stdout }}"
+      msg: "files on {{ hostname.stdout }} successfully transferred"
