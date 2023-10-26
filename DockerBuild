@@ -1,0 +1,64 @@
+---
+# Docker install with configuration and mounting. For Ubuntu 22.04 Server
+
+- hosts: all
+  become: true
+  tasks:
+  - name: Install docker
+    shell: apt install docker
+
+  - name: Install Docker-Compose
+    shell: apt-get install docker-compose-plugin
+
+  - name: Mounting network drives
+    shell: 
+    shell: 
+    shell: 
+    shell: 
+    shell: 
+
+  - name: Creating Docker environment
+    shell: mkdir /home/torrent/docker_services
+    shell: chmod 755 /home/torrent/docker_services
+
+  - name: Creating Docker-Compose file
+    copy:
+      dest: /home/torrent/docker_services/docker-compose.yaml
+      content: |
+        version: '3.8'
+        services:
+          radarr:
+            image: linuxserver/radarr
+            ports:
+              - "7878:7878" # port mapping
+            volumes:
+              - "./config/radarr:/config" # config directory for radarr
+              - "/storage/Downloads/complete:/downloads" # completed downloads directory from qbit
+              - "/storage/Movies:/storage/Movies" # where radarr will copy your movies. add as many of these as you need
+            environment:
+              TZ: America/Denver
+              PUID: 1000 # set this to the UID of your user
+              PGID: 1000 # set this to the GID of your user
+            restart: unless-stopped
+
+          sonarr:
+            image: linuxserver/sonarr
+            ports:
+              - "8989:8989" # port mapping
+            volumes:
+              - "./config/radarr:/config" # config directory for sonarr
+              - "/storage/Downloads/complete:/downloads" # completed downloads directory from qbit
+              - "/storage/Movies:/storage/Movies" # where sonarr will copy your tv shows. add as many of these as you need
+            environment:
+              TZ: America/Denver
+              PUID: 1000 # set this to the UID of your user
+              PGID: 1000 # set this to the GID of your user
+            restart: unless-stopped
+
+
+
+
+  - name: Update
+    shell: apt update
+    shell: apt upgrade
+    shell: docker-compose up -d
