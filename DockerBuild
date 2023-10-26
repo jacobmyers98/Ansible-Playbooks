@@ -25,10 +25,10 @@
     copy:
       dest: /home/torrent/docker_services/docker-compose.yaml
       content: |
-        version: '3.8'
+        version: "3.8"
         services:
           radarr:
-            image: linuxserver/radarr
+            image: lscr.io/linuxserver/radarr
             ports:
               - "7878:7878" # port mapping
             volumes:
@@ -42,7 +42,7 @@
             restart: unless-stopped
 
           sonarr:
-            image: linuxserver/sonarr
+            image: lscr.io/linuxserver/sonarr
             ports:
               - "8989:8989" # port mapping
             volumes:
@@ -55,6 +55,34 @@
               PGID: 1000 # set this to the GID of your user
             restart: unless-stopped
 
+          qbittorrent:
+            image: lscr.io/linuxserver/qbittorrent
+            ports:
+              - 8080:8080
+              - 6881:6881
+              - 6881:6881/udp
+            environment:
+              - PUID: 1000
+              - PGID: 1000
+              - TZ: America/Denver
+              - WEBUI_PORT: 8080
+            volumes:
+              - /path/to/appdata/config:/config
+              - /path/to/downloads:/downloads
+            restart: unless-stopped
+
+          jackett:
+            image: lscr.io/linuxserver/jackett
+            ports:
+              - 9117:9117
+            environment:
+              - PUID: 1000
+              - PGID: 1000
+              - TZ: America/Denver
+            volumes:
+              - /path/to/data:/config
+              - /path/to/blackhole:/downloads
+            restart: unless-stopped
 
 
 
