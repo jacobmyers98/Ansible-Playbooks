@@ -9,6 +9,7 @@
 
   - name: Install Docker-Compose
     shell: apt-get install docker-compose-plugin
+    shell: apt-get install csh
 
   - name: Mounting network drives
     shell: 
@@ -32,9 +33,9 @@
             ports:
               - "7878:7878" # port mapping
             volumes:
-              - "./config/radarr:/config" # config directory for radarr
-              - "/storage/Downloads/complete:/downloads" # completed downloads directory from qbit
-              - "/storage/Movies:/storage/Movies" # where radarr will copy your movies. add as many of these as you need
+              - "./config/radarr:/config"
+              - "/storage/Downloads/complete:/downloads"
+              - "/storage/Movies:/storage/Movies"
             environment:
               TZ: America/Denver
               PUID: 1000 # set this to the UID of your user
@@ -80,8 +81,10 @@
               - PGID: 1000
               - TZ: America/Denver
             volumes:
-              - /path/to/data:/config
-              - /path/to/blackhole:/downloads
+              - /config:/config
+              - type: bind
+                source: /mnt/Movies    # Host OS
+                target: /mnt/Movies    # Container OS
             restart: unless-stopped
 
 
