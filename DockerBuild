@@ -12,11 +12,11 @@
     shell: apt-get install csh
 
   - name: Mounting network drives
-    shell: 
-    shell: 
-    shell: 
-    shell: 
-    shell: 
+    shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server
+    shell: mount -t cifs //192.168.0.10/Media/Movies /mnt/Movies -o username=server
+    shell: mount -t cifs //192.168.0.10/Media/TV_Shows /mnt/Shows -o username=server
+    shell: mount -t cifs //192.168.0.10/Media/Torrent/mnt/Torrent -o username=server
+    shell: mount -t cifs //192.168.0.10/Media/Torrent/Incomplete /mnt/Incomplete -o username=server
 
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
