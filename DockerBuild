@@ -33,13 +33,28 @@
             ports:
               - "7878:7878" # port mapping
             volumes:
-              - "./config/radarr:/config"
-              - "/storage/Downloads/complete:/downloads"
-              - "/storage/Movies:/storage/Movies"
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/radarr/config    # Host OS
+                target: /radarr/config    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/radarr/downloads    # Host OS
+                target: /radarr/downloads    # Container OS
+              - type: bind
+                source: /mnt/Media    # Host OS
+                target: /mnt/Media    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent/Incomplete    # Host OS
+                target: /mnt/Torrent/Incomplete    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent    # Host OS
+                target: /mnt/Torrent    # Container OS
+              - type: bind
+              source: /mnt/Movies    # Host OS
+              target: /mnt/Movies    # Container OS
             environment:
               TZ: America/Denver
-              PUID: 1000 # set this to the UID of your user
-              PGID: 1000 # set this to the GID of your user
+              PUID: 0 # set this to the UID of your user
+              PGID: 0 # set this to the GID of your user
             restart: unless-stopped
 
           sonarr:
@@ -47,13 +62,28 @@
             ports:
               - "8989:8989" # port mapping
             volumes:
-              - "./config/radarr:/config" # config directory for sonarr
-              - "/storage/Downloads/complete:/downloads" # completed downloads directory from qbit
-              - "/storage/Movies:/storage/Movies" # where sonarr will copy your tv shows. add as many of these as you need
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/sonarr/config    # Host OS
+                target: /sonarr/config    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/sonarr/downloads    # Host OS
+                target: /sonarr/downloads    # Container OS
+              - type: bind
+                source: /mnt/Media    # Host OS
+                target: /mnt/Media    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent/Incomplete    # Host OS
+                target: /mnt/Torrent/Incomplete    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent    # Host OS
+                target: /mnt/Torrent    # Container OS
+              - type: bind
+                source: /mnt/Shows    # Host OS
+                target: /mnt/Shows    # Container OS
             environment:
               TZ: America/Denver
-              PUID: 1000 # set this to the UID of your user
-              PGID: 1000 # set this to the GID of your user
+              PUID: 0 # set this to the UID of your user
+              PGID: 0 # set this to the GID of your user
             restart: unless-stopped
 
           qbittorrent:
@@ -63,13 +93,32 @@
               - 6881:6881
               - 6881:6881/udp
             environment:
-              - PUID: 1000
-              - PGID: 1000
+              - PUID: 0
+              - PGID: 0
               - TZ: America/Denver
               - WEBUI_PORT: 8080
             volumes:
-              - /path/to/appdata/config:/config
-              - /path/to/downloads:/downloads
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/qbittorrent/config    # Host OS
+                target: /qbittorrent/config    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/qbittorrent/downloads    # Host OS
+                target: /qbittorrent/downloads    # Container OS
+              - type: bind
+                source: /mnt/Media    # Host OS
+                target: /mnt/Media    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent/Incomplete    # Host OS
+                target: /mnt/Torrent/Incomplete    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent    # Host OS
+                target: /mnt/Torrent    # Container OS
+              - type: bind
+                source: /mnt/Movies    # Host OS
+                target: /mnt/Movies    # Container OS
+              - type: bind
+                source: /mnt/Shows    # Host OS
+                target: /mnt/Shows    # Container OS
             restart: unless-stopped
 
           jackett:
@@ -77,15 +126,58 @@
             ports:
               - 9117:9117
             environment:
-              - PUID: 1000
-              - PGID: 1000
+              - PUID: 0
+              - PGID: 0
               - TZ: America/Denver
             volumes:
-              - /config:/config
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/jackett/config    # Host OS
+                target: /jackett/config    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/jackett/downloads    # Host OS
+                target: /jackett/downloads    # Container OS
+              - type: bind
+                source: /mnt/Media    # Host OS
+                target: /mnt/Media    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent/Incomplete    # Host OS
+                target: /mnt/Torrent/Incomplete    # Container OS
+              - type: bind
+                source: /mnt/Media/Torrent    # Host OS
+                target: /mnt/Torrent    # Container OS
               - type: bind
                 source: /mnt/Movies    # Host OS
                 target: /mnt/Movies    # Container OS
+              - type: bind
+                source: /mnt/Shows    # Host OS
+                target: /mnt/Shows    # Container OS
             restart: unless-stopped
+
+            uptime-kuma:
+              image: louislam/uptime-kuma
+              container_name: uptime-kuma
+              volumes:
+              - type: bind
+                source: /mnt/Media/Torrent_Configs/uptime/config    # Host OS
+                target: /uptime/config    # Container OS
+              ports:
+              - 3001:3001  # <Host Port>:<Container Port>
+              restart: always
+
+            heimdall:
+              image: linuxserver/heimdall
+              container_name: heimdall
+              environment:
+                - PUID=0
+                - PGID=0
+                - TZ=  America/Denver
+              volumes:
+                - type: bind
+                source: /mnt/Media/Torrent_Configs/heimdall/config    # Host OS
+                target: /heimdall/config    # Container OS
+              ports:
+                - 443:443
+              restart: unless-stopped
 
 
 
