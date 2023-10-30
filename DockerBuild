@@ -9,9 +9,9 @@
 
   - name: Install Docker-Compose
     shell: apt-get install docker-compose-plugin
-    shell: apt-get install csh
 
   - name: Mounting network drives
+    shell: mkdir /mnt/Media
     shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server
 
   - name: Creating Docker environment
@@ -106,6 +106,10 @@
               restart: unless-stopped
 
 
+  - name: Install csh
+    shell: apt-get install csh
+    shell:
+    shell:
 
   - name: Update
     shell: apt update
