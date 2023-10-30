@@ -98,7 +98,7 @@
               environment:
                 - PUID=0
                 - PGID=0
-                - TZ=  America/Denver
+                - TZ=America/Denver
               volumes:
               - /home/torrent/docker/heimdall/config:/config
               ports:
@@ -106,10 +106,11 @@
               restart: unless-stopped
 
 
-  - name: Install csh
+  - name: Installing csh
     shell: apt-get install csh
-    shell: whereis csh
-    shell: usermod -s (user) /usr/bin/csh
+    shell: type -P -a csh
+    register: cshlocation
+    shell: usermod -s root {{ cshlocation.stdout }}
 
   - name: Update
     shell: apt update
