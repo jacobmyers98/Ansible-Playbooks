@@ -108,8 +108,8 @@
 
   - name: Install csh
     shell: apt-get install csh
-    shell:
-    shell:
+    shell: whereis csh
+    shell: usermod -s (user) /usr/bin/csh
 
   - name: Update
     shell: apt update
