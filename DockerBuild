@@ -13,10 +13,6 @@
 
   - name: Mounting network drives
     shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server
-    shell: mount -t cifs //192.168.0.10/Media/Movies /mnt/Movies -o username=server
-    shell: mount -t cifs //192.168.0.10/Media/TV_Shows /mnt/Shows -o username=server
-    shell: mount -t cifs //192.168.0.10/Media/Torrent /mnt/Torrent -o username=server
-    shell: mount -t cifs //192.168.0.10/Media/Torrent/Incomplete /mnt/Incomplete -o username=server
 
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
@@ -33,24 +29,9 @@
             ports:
               - "7878:7878" # port mapping
             volumes:
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/radarr/config    # Host OS
-                target: /radarr/config    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/radarr/downloads    # Host OS
-                target: /radarr/downloads    # Container OS
-              - type: bind
-                source: /mnt/Media    # Host OS
-                target: /mnt/Media    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent/Incomplete    # Host OS
-                target: /mnt/Torrent/Incomplete    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent    # Host OS
-                target: /mnt/Torrent    # Container OS
-              - type: bind
-              source: /mnt/Movies    # Host OS
-              target: /mnt/Movies    # Container OS
+              - /mnt/Media:/mnt/Media
+              - /home/torrent/docker/radarr/config:/config
+              - /downloads:/downloads
             environment:
               TZ: America/Denver
               PUID: 0 # set this to the UID of your user
@@ -62,24 +43,9 @@
             ports:
               - "8989:8989" # port mapping
             volumes:
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/sonarr/config    # Host OS
-                target: /sonarr/config    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/sonarr/downloads    # Host OS
-                target: /sonarr/downloads    # Container OS
-              - type: bind
-                source: /mnt/Media    # Host OS
-                target: /mnt/Media    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent/Incomplete    # Host OS
-                target: /mnt/Torrent/Incomplete    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent    # Host OS
-                target: /mnt/Torrent    # Container OS
-              - type: bind
-                source: /mnt/Shows    # Host OS
-                target: /mnt/Shows    # Container OS
+              - /mnt/Media:/mnt/Media
+              - /home/torrent/docker/sonarr/config:/config
+              - /downloads:/downloads
             environment:
               TZ: America/Denver
               PUID: 0 # set this to the UID of your user
@@ -98,27 +64,9 @@
               - TZ: America/Denver
               - WEBUI_PORT: 8080
             volumes:
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/qbittorrent/config    # Host OS
-                target: /qbittorrent/config    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/qbittorrent/downloads    # Host OS
-                target: /qbittorrent/downloads    # Container OS
-              - type: bind
-                source: /mnt/Media    # Host OS
-                target: /mnt/Media    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent/Incomplete    # Host OS
-                target: /mnt/Torrent/Incomplete    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent    # Host OS
-                target: /mnt/Torrent    # Container OS
-              - type: bind
-                source: /mnt/Movies    # Host OS
-                target: /mnt/Movies    # Container OS
-              - type: bind
-                source: /mnt/Shows    # Host OS
-                target: /mnt/Shows    # Container OS
+              - /mnt/Media:/mnt/Media
+              - /home/torrent/docker/qbittorrent/config:/config
+              - /downloads:/downloads
             restart: unless-stopped
 
           jackett:
@@ -130,36 +78,16 @@
               - PGID: 0
               - TZ: America/Denver
             volumes:
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/jackett/config    # Host OS
-                target: /jackett/config    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/jackett/downloads    # Host OS
-                target: /jackett/downloads    # Container OS
-              - type: bind
-                source: /mnt/Media    # Host OS
-                target: /mnt/Media    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent/Incomplete    # Host OS
-                target: /mnt/Torrent/Incomplete    # Container OS
-              - type: bind
-                source: /mnt/Media/Torrent    # Host OS
-                target: /mnt/Torrent    # Container OS
-              - type: bind
-                source: /mnt/Movies    # Host OS
-                target: /mnt/Movies    # Container OS
-              - type: bind
-                source: /mnt/Shows    # Host OS
-                target: /mnt/Shows    # Container OS
+              - /mnt/Media:/mnt/Media
+              - /home/torrent/docker/jackett/config:/config
+              - /downloads:/downloads
             restart: unless-stopped
 
             uptime-kuma:
               image: louislam/uptime-kuma
               container_name: uptime-kuma
               volumes:
-              - type: bind
-                source: /mnt/Media/Torrent_Configs/uptime/config    # Host OS
-                target: /uptime/config    # Container OS
+              - /home/torrent/docker/uptime-kuma-data/config:/uptime-kuma-data
               ports:
               - 3001:3001  # <Host Port>:<Container Port>
               restart: unless-stopped
@@ -172,9 +100,7 @@
                 - PGID=0
                 - TZ=  America/Denver
               volumes:
-                - type: bind
-                source: /mnt/Media/Torrent_Configs/heimdall/config    # Host OS
-                target: /heimdall/config    # Container OS
+              - /home/torrent/docker/heimdall/config:/config
               ports:
                 - 443:443
               restart: unless-stopped
