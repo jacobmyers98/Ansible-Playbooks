@@ -11,14 +11,14 @@
     shell: apt-get install docker-compose-plugin
 
   - name: Mounting network drives
-    shell: mkdir /mnt/Media
-    shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server
+    shell: mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
+    shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
 
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
     shell: chmod 755 /home/torrent/docker_services
 
-  - name: Creating Docker-Compose file
+  - name: Creating Docker-Compose file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
       dest: /home/torrent/docker_services/docker-compose.yaml
       content: |
