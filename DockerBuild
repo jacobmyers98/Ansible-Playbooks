@@ -105,13 +105,6 @@
                 - 443:443
               restart: unless-stopped
 
-
-  - name: Installing csh
-    shell: apt-get install csh
-    shell: type -P -a csh
-    register: cshlocation
-    shell: usermod -s root {{ cshlocation.stdout }}
-
   - name: Update
     shell: apt update
     shell: apt upgrade
