@@ -8,12 +8,29 @@
       upgrade: yes
       update_chache: yes
 
-  - name: check docker-compose installation
-    shell: command -v docker-compose >/dev/null 2>&1
-    register: is_docker_compose_install
-    ignore_errors: yes
-  - debug: msg="{{ is_docker_compose_install.rc }}" # it returns rc 1
-  - debug: var=is_docker_compose_install
-  - name: Run only if compose is installed
-    shell: command docker-compose up -d
+  - name: check pterodactyl is installed
+    ansible.builtin.stat:
+      path: /var/www/pterodactyl
+    register: p_alive
 
+  - name: update pterodactyl if alive
+    command: 
+    command: 
+    command:
+    command:
+    command:
+    command:
+    command:
+    command:
+    command:
+    when: p_alive.stat.exists
+
+  - name: check docker-compose is installed
+    ansible.builtin.stat:
+      path: /home/torrent/docker_torrents
+    register: docker_alive
+
+  - name: update docker-compose if alive
+    command: cd /home/torrent/docker_torrents
+    command: docker-compose up -d
+    when: docker_alive.stat.exists
