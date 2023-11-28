@@ -1,0 +1,19 @@
+---
+# ansible-playbook Playbooks/simple_update.yml
+- hosts: all
+  become: true
+  tasks:
+  - name: apt update
+    apt:
+      upgrade: yes
+      update_chache: yes
+
+  - name: check docker-compose installation
+    shell: command -v docker-compose >/dev/null 2>&1
+    register: is_docker_compose_install
+    ignore_errors: yes
+  - debug: msg="{{ is_docker_compose_install.rc }}" # it returns rc 1
+  - debug: var=is_docker_compose_install
+  - name: Run only if compose is installed
+    shell: command docker-compose up -d
+
