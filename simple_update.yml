@@ -9,7 +9,7 @@
 
   - name: check the mount of servers
     ansible.builtin.stat:
-      path: /mnt/media
+      path: /mnt/Media
     register: mount
 
   - name: Mounting network drives
