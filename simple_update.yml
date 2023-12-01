@@ -6,7 +6,6 @@
   - name: apt update
     apt:
       upgrade: yes
-      update_chache: yes
 
   - name: check the mount of servers
     ansible.builtin.stat:
