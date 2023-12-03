@@ -13,8 +13,9 @@
     register: mount
 
   - name: Mounting network drives
-    shell: mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
-    shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
+    shell: |
+      mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
+      mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
   - name: check pterodactyl is installed
@@ -23,21 +24,22 @@
     register: p_alive
 
   - name: update pterodactyl if alive
-    shell: cd /var/www/pterodactyl
-    shell: php artisan down
-    shell: curl -L https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz | tar -xzv
-    shell: chmod -R 755 storage/* bootstrap/cache
-    shell: composer install --no-dev --optimize-autoloader
-    shell: php artisan view:clear
-    shell: php artisan config:clear
-    shell: php artisan migrate --seed --force
-    shell: chown -R www-data:www-data /var/www/pterodactyl/*
-    shell: php artisan queue:restart
-    shell: php artisan up
-    shell: systemctl stop wings
-    shell: curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
-    shell: chmod u+x /usr/local/bin/wings
-    shell: systemctl restart wings   
+    shell: |
+      cd /var/www/pterodactyl
+      php artisan down
+      curl -L https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz | tar -xzv
+      chmod -R 755 storage/* bootstrap/cache
+      composer install --no-dev --optimize-autoloader
+      php artisan view:clear
+      php artisan config:clear
+      php artisan migrate --seed --force
+      chown -R www-data:www-data /var/www/pterodactyl/*
+      php artisan queue:restart
+      php artisan up
+      systemctl stop wings
+      curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+      chmod u+x /usr/local/bin/wings
+      systemctl restart wings   
     when: p_alive.stat.exists
 
   - name: check docker-compose is installed
@@ -46,6 +48,7 @@
     register: docker_alive
 
   - name: update docker-compose if alive
-    shell: cd /home/torrent/docker_torrents
-    shell: docker-compose up -d
+    shell: |
+      cd /home/torrent/docker_torrents
+      docker-compose up -d
     when: docker_alive.stat.exists
