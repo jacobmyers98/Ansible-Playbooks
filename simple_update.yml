@@ -24,14 +24,19 @@
     register: p_alive
 
   - name: update pterodactyl if alive
-    shell: |
-      cd /var/www/pterodactyl
+    ansible.builtin.shell: |
       php artisan down
+      exit 1
       curl -L https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz | tar -xzv
+      exit 1
       chmod -R 755 storage/* bootstrap/cache
+      exit 1
       composer install --no-dev --optimize-autoloader
+      exit 1
       php artisan view:clear
+      exit 1
       php artisan config:clear
+      exit 1
       php artisan migrate --seed --force
       chown -R www-data:www-data /var/www/pterodactyl/*
       php artisan queue:restart
@@ -39,8 +44,14 @@
       systemctl stop wings
       curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
       chmod u+x /usr/local/bin/wings
-      systemctl restart wings   
+      systemctl restart wings
+      register: shell_result
+    args:
+      chdir: /var/www/pterodactyl
     when: p_alive.stat.exists
+
+  - debug:
+      var: shell_result.stdout_lines
 
   - name: check docker-compose is installed
     ansible.builtin.stat:
