@@ -27,6 +27,12 @@
       dest: /home/torrent/git
       update: yes
 
+  - name: creating a cron job entry
+    cron:
+      name: backup service
+      special_time: monthly
+      job: "/home/torrent/git/Automation-Scripts/simple_server-backup"
+
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
     shell: chmod 755 /home/torrent/docker_services
