@@ -1,5 +1,6 @@
 ---
 # ansible-playbook -u 'username' Playbooks/CopyAndRemove.yaml -l 'hostname' --connection=local
+# ansible playbook just to play with, copies and removes files in directories
 - hosts: all
   become: false
   tasks:
