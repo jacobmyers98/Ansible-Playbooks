@@ -1,5 +1,6 @@
 ---
 # ansible-playbook Playbooks/simple_update.yml
+# ansible playbook to update docker containers and pterodactyl containers
 - hosts: all
   become: true
   tasks:
