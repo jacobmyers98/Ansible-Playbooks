@@ -21,6 +21,12 @@
       mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
+  - name: update git repo for scripts
+    ansible.builtin.git:
+      repo: 'https://github.com/jacobmyers98/Automation-Scripts'
+      dest: /home/torrent/git
+      update: yes
+
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
     shell: chmod 755 /home/torrent/docker_services
