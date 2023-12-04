@@ -113,6 +113,7 @@
               restart: unless-stopped
 
   - name: Update
-    shell: apt update
-    shell: apt upgrade
-    shell: docker-compose up -d
+    shell: |
+    apt update
+    apt upgrade
+    docker-compose up -d
