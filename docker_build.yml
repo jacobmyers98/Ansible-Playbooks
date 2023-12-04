@@ -1,7 +1,7 @@
 ---
 # Docker install with configuration and mounting. For Ubuntu 22.04 Server
 
-- hosts: all
+- hosts: docker
   become: true
   tasks:
   - name: Install docker
@@ -10,9 +10,16 @@
   - name: Install Docker-Compose
     shell: apt-get install docker-compose-plugin
 
+  - name: check the mount of docker servers
+    ansible.builtin.stat:
+      path: /mnt/Media
+    register: mount
+
   - name: Mounting network drives
-    shell: mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
-    shell: mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
+    shell: |
+      mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
+      mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
+    when: mount.stat.exists == False
 
   - name: Creating Docker environment
     shell: mkdir /home/torrent/docker_services
