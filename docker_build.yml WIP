@@ -4,13 +4,18 @@
 - hosts: docker
   become: true
   tasks:
-  - name: Install docker
-    shell: apt install docker
-
-  - name: Install Docker-Compose
-    shell: apt-get install docker-compose-plugin
-
-  - name: check the mount of docker servers
+- name: Install all packages needed for docker host
+  apt:
+    pkg:
+      - docker
+      - docker-compose-plugin
+      - cifs-utils
+      - smbclient
+      - samba
+    state: latest
+    update_cache: true
+ 
+  - name: Check the mount of docker servers
     ansible.builtin.stat:
       path: /mnt/Media
     register: mount
@@ -21,13 +26,13 @@
       mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
-  - name: update git repo for scripts
+  - name: Update git repo for scripts
     ansible.builtin.git:
       repo: 'https://github.com/jacobmyers98/Automation-Scripts'
       dest: /home/torrent/git
       update: yes
 
-  - name: creating a cron job entry
+  - name: Create a cron job entry
     cron:
       name: backup service
       special_time: monthly
