@@ -39,8 +39,17 @@
       job: "/home/torrent/git/Automation-Scripts/simple_server-backup"
 
   - name: Creating Docker environment
-    shell: mkdir /home/torrent/docker_services
-    shell: chmod 755 /home/torrent/docker_services
+    shell: |
+      mkdir /home/torrent/docker_services
+      touch /home/torrent/docker_services/docker-compose.yaml
+      chmod 755 /home/torrent/docker_services
+      mkdir /home/torrent/docker
+      mkdir /home/torrent/docker/radarr
+      mkdir /home/torrent/docker/sonarr
+      mkdir /home/torrent/docker/qbittorrent
+      mkdir /home/torrent/docker/jackett
+      mkdir /home/torrent/docker/uptime-kuma-data
+      mkdir /home/torrent/docker/heimdall
 
   - name: Creating Docker-Compose file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
