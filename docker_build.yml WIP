@@ -26,18 +26,6 @@
       mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
-  - name: Update git repo for scripts
-    ansible.builtin.git:
-      repo: 'https://github.com/jacobmyers98/Automation-Scripts'
-      dest: /home/torrent/git
-      update: yes
-
-  - name: Create a cron job entry
-    cron:
-      name: backup service
-      special_time: monthly
-      job: "/home/torrent/git/Automation-Scripts/simple_server-backup"
-
   - name: Creating Docker environment
     shell: |
       mkdir /home/torrent/docker_services
@@ -50,6 +38,19 @@
       mkdir /home/torrent/docker/jackett
       mkdir /home/torrent/docker/uptime-kuma-data
       mkdir /home/torrent/docker/heimdall
+      mkdir /home/torrent/git
+
+  - name: Update git repo for scripts
+    ansible.builtin.git:
+      repo: 'https://github.com/jacobmyers98/Automation-Scripts'
+      dest: /home/torrent/git
+      update: yes
+
+  - name: Create a cron job entry
+    cron:
+      name: backup service
+      special_time: monthly
+      job: "/home/torrent/git/Automation-Scripts/simple_server-backup"
 
   - name: Creating Docker-Compose file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
