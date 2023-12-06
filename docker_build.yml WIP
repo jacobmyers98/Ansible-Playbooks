@@ -4,17 +4,16 @@
 - hosts: docker
   become: true
   tasks:
-- name: Install all packages needed for docker host
-  apt:
-    pkg:
-      - docker
-      - docker-compose-plugin
-      - cifs-utils
-      - smbclient
-      - samba
-      - vim
-    state: latest
-    update_cache: true
+  - name: Install all packages needed for docker host
+    apt:
+      pkg:
+        - docker
+        - docker-compose
+        - cifs-utils
+        - smbclient
+        - samba
+      state: latest
+      update_cache: true
  
   - name: Check the mount of docker servers
     ansible.builtin.stat:
@@ -118,30 +117,30 @@
               - /downloads:/downloads
             restart: unless-stopped
 
-            uptime-kuma:
-              image: louislam/uptime-kuma
-              container_name: uptime-kuma
-              volumes:
-              - /home/torrent/docker/uptime-kuma-data/config:/uptime-kuma-data
-              ports:
-              - 3001:3001  # <Host Port>:<Container Port>
-              restart: unless-stopped
+          uptime-kuma:
+            image: louislam/uptime-kuma
+            container_name: uptime-kuma
+            volumes:
+            - /home/torrent/docker/uptime-kuma-data/config:/uptime-kuma-data
+            ports:
+            - 3001:3001  # <Host Port>:<Container Port>
+            restart: unless-stopped
 
-            heimdall:
-              image: linuxserver/heimdall
-              container_name: heimdall
-              environment:
-                - PUID=0
-                - PGID=0
-                - TZ=America/Denver
-              volumes:
+          heimdall:
+            image: linuxserver/heimdall
+            container_name: heimdall
+            environment:
+              - PUID=0
+              - PGID=0
+              - TZ=America/Denver
+            volumes:
               - /home/torrent/docker/heimdall/config:/config
-              ports:
-                - 443:443
-              restart: unless-stopped
+            ports:
+              - 443:443
+            restart: unless-stopped
 
   - name: Update
     shell: |
-    apt update
-    apt upgrade
-    docker-compose up -d
+      apt update
+      apt upgrade
+      docker-compose up -d
