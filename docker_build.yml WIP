@@ -40,16 +40,16 @@
 
   - name: Docker dir check
     stat:
-      path: /home/torrent/docker_services
+      path: /home/torrent/docker_torrents
     register: dockerCompose
 
   - name: Creating Docker environment
     shell: |
-      mkdir /home/torrent/docker_services
-      touch /home/torrent/docker_services/docker-compose.yaml
-      chmod 755 /home/torrent/docker_services
+      mkdir /home/torrent/docker_torrents
+      touch /home/torrent/docker_torrents/docker-compose.yaml
+      chmod 755 /home/torrent/docker_torrents
       chown torrent /home/torrent/*
-      chown torrent /home/torrent/docker_services/*
+      chown torrent /home/torrent/docker_torrents/*
       mkdir /home/torrent/git
     when: dockerCompose.stat.exists == False
 
