@@ -7,7 +7,7 @@
   tasks:
   - name: Extract ISO and mount
     iso_extract:
-      image: /cots/x86/matlab/.iso
+      image: /cots/x86/matlab/R2022b_Update_4_Linux.iso
       dest: /opt1/
 #      files:
 #      - 
