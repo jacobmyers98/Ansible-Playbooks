@@ -139,8 +139,6 @@
               - 443:443
             restart: unless-stopped
 
-  - name: Update
-    shell: |
-      apt update
-      apt upgrade
-      docker-compose up -d
+  - name: apt update
+    apt:
+      upgrade: yes
