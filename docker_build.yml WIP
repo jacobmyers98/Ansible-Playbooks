@@ -17,8 +17,8 @@
 
   - name: Check for the docker user
     ansible.builtin.stat:
-      path: /homte/torrent
-    register: docker-user
+      path: /home/torrent
+    register: dockerUser
 
   - name: Make the docker user
     ansible.builtin.user:
@@ -26,7 +26,7 @@
       comment: docker user
       uid: 666
       group: torrent
-    when: docker-user.stat.exists
+    when: dockerUser.stat.exists == False
  
   - name: Check the mount of docker servers
     ansible.builtin.stat:
@@ -42,7 +42,7 @@
   - name: Docker dir check
     stat:
       path: /home/torrent/docker_services
-    register: docker-compose
+    register: dockerCompose
 
   - name: Creating Docker environment
     shell: |
@@ -50,7 +50,7 @@
       touch /home/torrent/docker_services/docker-compose.yaml
       chmod 755 /home/torrent/docker_services
       mkdir /home/torrent/git
-    when: docker-compose.stat.exists
+    when: dockerCompose.stat.exists == False
 
   - name: Docker dir check
     stat:
@@ -66,7 +66,7 @@
       mkdir /home/torrent/docker/jackett
       mkdir /home/torrent/docker/uptime-kuma-data
       mkdir /home/torrent/docker/heimdall
-    when: docker.stat.exists
+    when: docker.stat.exists == False
 
   - name: Update git repo for scripts
     ansible.builtin.git:
