@@ -1,0 +1,31 @@
+---
+# Install for Matlab from an ISO image
+
+
+- hosts: 'to'
+  become: true
+  tasks:
+  - name: Extract ISO and mount
+    iso_extract:
+      image: /cots/x86/matlab/.iso
+      dest: /opt1/
+#      files:
+#      - 
+#      - 
+#      - 
+
+  - name: change ownership
+    shell: chown -R root:root /opt1/matlab-2022-install/
+
+  - name: Install Matlab
+    expect:
+      shell: |
+        cd /opt1
+        ./install
+      timeout: 400
+      responses:
+        "Generate an envvar file?": "y\n"
+        "Download and install": "y\n"
+
+  - name: check the mount of servers
+    shell: chmod -R 755 /opt1/matlab_r2022b
