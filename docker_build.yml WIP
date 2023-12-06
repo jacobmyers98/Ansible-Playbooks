@@ -25,7 +25,6 @@
       name: torrent
       comment: docker user
       uid: 666
-      group: torrent
     when: dockerUser.stat.exists == False
  
   - name: Check the mount of docker servers
