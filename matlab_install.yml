@@ -1,10 +1,14 @@
 ---
 # Install for Matlab from an ISO image
 
-
 - hosts: 'to'
   become: true
   tasks:
+  - name: Checking for install of matlab
+    ansible.builtin.stat:
+      path: /opt1/matlab_r2022b/sys
+    register: matlab
+
   - name: Extract ISO and mount
     iso_extract:
       image: /cots/x86/matlab/R2022b_Update_4_Linux.iso
@@ -12,7 +16,8 @@
 #      files:
 #      - 
 #      - 
-#      - 
+#      -
+    when: matlab.stat.exists == False
 
   - name: change ownership
     shell: chown -R root:root /opt1/matlab-2022-install/
@@ -26,6 +31,7 @@
       responses:
         "Generate an envvar file?": "y\n"
         "Download and install": "y\n"
+    when: matlab.stat.exists == False
 
   - name: check the mount of servers
     shell: chmod -R 755 /opt1/matlab_r2022b
