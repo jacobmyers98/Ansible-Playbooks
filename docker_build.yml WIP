@@ -48,6 +48,8 @@
       mkdir /home/torrent/docker_services
       touch /home/torrent/docker_services/docker-compose.yaml
       chmod 755 /home/torrent/docker_services
+      chown torrent /home/torrent/*
+      chown torrent /home/torrent/docker_services/*
       mkdir /home/torrent/git
     when: dockerCompose.stat.exists == False
 
@@ -65,6 +67,8 @@
       mkdir /home/torrent/docker/jackett
       mkdir /home/torrent/docker/uptime-kuma-data
       mkdir /home/torrent/docker/heimdall
+      chown torrnet /home/torrent/docker/*
+      chown torrent /home/torrent/docker
     when: docker.stat.exists == False
 
   - name: Update git repo for scripts
