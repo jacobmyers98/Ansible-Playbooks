@@ -91,6 +91,8 @@
         services:
           radarr:
             image: lscr.io/linuxserver/radarr
+            networks:
+              - network1
             ports:
               - "7878:7878" # port mapping
             volumes:
@@ -105,6 +107,8 @@
 
           sonarr:
             image: lscr.io/linuxserver/sonarr
+            networks:
+              - network1
             ports:
               - "8989:8989" # port mapping
             volumes:
@@ -119,6 +123,8 @@
 
           qbittorrent:
             image: lscr.io/linuxserver/qbittorrent
+            networks:
+              - network1
             ports:
               - 8080:8080
               - 6881:6881
@@ -136,6 +142,8 @@
 
           jackett:
             image: lscr.io/linuxserver/jackett
+            networks:
+              - network1
             ports:
               - 9117:9117
             environment:
@@ -151,6 +159,8 @@
           uptime-kuma:
             image: louislam/uptime-kuma
             container_name: uptime-kuma
+            networks:
+              - network1
             environment:
               - PUID: 666
               - PGID: 666
@@ -164,6 +174,8 @@
           heimdall:
             image: linuxserver/heimdall
             container_name: heimdall
+            networks:
+              - network1
             environment:
               - PUID: 666
               - PGID: 666
