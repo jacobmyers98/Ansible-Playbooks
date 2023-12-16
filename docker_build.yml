@@ -186,6 +186,12 @@
               - 443:443
             restart: unless-stopped
 
+        networks:
+          network1:
+            name: docker0
+            driver: bridge
+            external: false
+
   - name: apt update
     apt:
       upgrade: yes
