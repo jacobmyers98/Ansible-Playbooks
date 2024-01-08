@@ -42,5 +42,6 @@
   - name: update docker-compose if alive
     shell: |
       cd /home/torrent/docker_torrents
+      docker-compose pull
       docker-compose up -d
     when: docker_alive.stat.exists
