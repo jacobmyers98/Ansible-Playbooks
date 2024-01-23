@@ -1,4 +1,9 @@
 ---
+
+# Author: Jacob M
+# Last edited on: 1/23/2024
+# Educational purposes only
+
 # ansible-playbook Playbooks/simple_update.yml
 # ansible playbook to update docker containers and pterodactyl containers
 - hosts: all
