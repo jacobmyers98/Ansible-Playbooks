@@ -1,0 +1,141 @@
+---
+
+# Author: Jacob M
+# Last edited on: 1/23/2024
+# Educational purposes only
+
+# Docker install with configuration and mounting. For Ubuntu 22.04 Server
+
+- hosts: docker
+  become: true
+  tasks:
+  - name: Install all packages needed for docker host
+    apt:
+      pkg:
+        - docker
+        - cifs-utils
+        - smbclient
+        - samba
+      state: latest
+      update_cache: true
+
+  - name: Check for the docker user
+    ansible.builtin.stat:
+      path: /home/torrent
+    register: dockerUser
+
+  - name: Make the docker user
+    ansible.builtin.user:
+      name: torrent
+      comment: docker user
+      uid: 666
+    when: dockerUser.stat.exists == False
+ 
+  - name: Check the mount of docker servers
+    ansible.builtin.stat:
+      path: /mnt/Media
+    register: mount
+
+  - name: Mounting network drives
+    shell: |
+      mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
+      mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
+    when: mount.stat.exists == False
+
+  - name: Docker dir check
+    stat:
+      path: /home/torrent/docker
+    register: docker
+
+  - name: Creating Docker config environment
+    shell: |
+      mkdir /home/torrent/docker
+      mkdir /home/torrent/docker/radarr
+      mkdir /home/torrent/docker/sonarr
+      mkdir /home/torrent/docker/qbittorrent
+      mkdir /home/torrent/docker/jackett
+      mkdir /home/torrent/docker/heimdall
+      chown torrent /home/torrent/docker/*
+      chown torrent /home/torrent/docker
+    when: docker.stat.exists == False
+
+  - name: Update git repo for scripts
+    ansible.builtin.git:
+      repo: 'https://github.com/jacobmyers98/Automation-Scripts'
+      dest: /home/torrent/git
+      update: yes
+
+  - name: Create a cron job entry
+    cron:
+      name: backup service
+      special_time: monthly
+      job: "/home/torrent/git/Automation-Scripts/simple_server-backup"
+
+  - name: Creating Docker environment                                            
+    shell: |
+      docker run -d \
+      --name=radarr \
+      -e PUID=666 \
+      -e PGID=666 \
+      -e TZ=America/Denver \
+      -p 7878:7878 \
+      -v /home/torrent/docker/radarr/config:/config \
+      -v /mnt/Media:/mnt/Media \
+      -v /downloads:/downloads `#optional` \
+      --restart unless-stopped \
+      lscr.io/linuxserver/radarr:latest
+
+      docker run -d \
+      --name=sonarr \
+      -e PUID=666 \
+      -e PGID=666 \
+      -e TZ=America/Denver \
+      -p 8989:8989 \
+      -v /home/torrent/docker/sonarr/config:/config \
+      -v /mnt/Media:/mnt/Media \
+      -v /downloads:/downloads `#optional` \
+      --restart unless-stopped \
+      lscr.io/linuxserver/sonarr:latest
+
+      docker run -d \
+      --name=qbittorrent \
+      -e PUID=666 \
+      -e PGID=666 \
+      -e TZ=America/Denver \
+      -e WEBUI_PORT=8080 \
+      -p 8080:8080 \
+      -p 6881:6881 \
+      -p 6881:6881/udp \
+      -v /home/torrent/docker/qbittorrent/config:/config \
+      -v /downloads:/downloads \
+      -v /mnt/Media:/mnt/Media \
+      --restart unless-stopped \
+      lscr.io/linuxserver/qbittorrent:latest
+
+      docker run -d \
+      --name=jackett \
+      -e PUID=666 \
+      -e PGID=666 \
+      -e TZ=America/Denver \
+      -e AUTO_UPDATE=true `#optional` \
+      -e RUN_OPTS= `#optional` \
+      -p 9117:9117 \
+      -v /home/torrent/docker/jackett/config:/config \
+      -v /downloads:/downloads \
+      -v /mnt/Media:/mnt/Media \
+      --restart unless-stopped \
+      lscr.io/linuxserver/jackett:latest
+
+      docker run -d \
+      --name=heimdall \
+      -e PUID=666 \
+      -e PGID=666 \
+      -e TZ=America/Denver \
+      -p 443:443 \
+      -v /home/torrent/docker/heimdall/config:/config \
+      --restart unless-stopped \
+      lscr.io/linuxserver/heimdall:latest
+
+  - name: apt update
+    apt:
+      upgrade: yes
