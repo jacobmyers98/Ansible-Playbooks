@@ -117,8 +117,6 @@
       -e PUID=666 \
       -e PGID=666 \
       -e TZ=America/Denver \
-      -e AUTO_UPDATE=true `#optional` \
-      -e RUN_OPTS= `#optional` \
       -p 9117:9117 \
       -v /home/torrent/docker/jackett/config:/config \
       -v /downloads:/downloads \
