@@ -65,7 +65,7 @@
     debug:
     var: shell_result.stdout_lines
 
- - name: Creating Docker-Compose file                                            #Variable, can change to your docker-compose.yml file if needed
+ - name: Creating Pods file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
       dest: /home/torrent/radarr.yaml
       content: |
