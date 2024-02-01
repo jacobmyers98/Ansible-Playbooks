@@ -1,0 +1,85 @@
+---
+
+# Author: Jacob M
+# Last edited on: 2/1/2024
+# Educational purposes only
+
+# Docker install with configuration and mounting. For Ubuntu 22.04 Server
+
+- hosts: k8
+  become: true
+  tasks:
+  - name: Install all packages needed for docker host
+    apt:
+      pkg:
+        - docker
+        - docker-compose
+        - cifs-utils
+        - smbclient
+        - samba
+      state: latest
+      update_cache: true
+    community.general.snap:
+      name: microk8s
+      classic: yes
+
+  - name: Check for the docker user
+    ansible.builtin.stat:
+      path: /home/torrent
+    register: dockerUser
+
+  - name: Make the docker user
+    ansible.builtin.user:
+      name: torrent
+      comment: docker user
+      uid: 666
+    when: dockerUser.stat.exists == False
+ 
+  - name: Check the mount of docker servers
+    ansible.builtin.stat:
+      path: /mnt/Media
+    register: mount
+
+  - name: Mounting network drives
+    shell: |
+      mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
+      mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
+    when: mount.stat.exists == False
+
+  - name: Creating Docker environment
+    shell: |
+      sudo usermod -a -G microk8s torrent
+      sudo chown -f -R torrent ~/.kube
+      su - torrent
+      microk8s start
+      microk8s enable dashboard
+      microk8s enable dns
+      microk8s enable ingress
+      microk8s kubectl get all --all-namespaces
+      microk8s dashboard-proxy &
+
+  - name: Start the node cluster
+    shell: microk8s add-node
+      register: shell_result
+
+  - name: Key to join cluster
+    debug:
+    var: shell_result.stdout_lines
+
+ - name: Creating Docker-Compose file                                            #Variable, can change to your docker-compose.yml file if needed
+    copy:
+      dest: /home/torrent/radarr.yaml
+      content: |
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          name: radarr
+        spec:
+          containers:
+          - name: radarr
+              image: lscr.io/linuxserver/radarr
+
+  - name: apt update
+    apt:
+      upgrade: yes
+
