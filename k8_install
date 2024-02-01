@@ -4,7 +4,7 @@
 # Last edited on: 2/1/2024
 # Educational purposes only
 
-# Docker install with configuration and mounting. For Ubuntu 22.04 Server
+# Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
 
 - hosts: k8
   become: true
@@ -13,7 +13,6 @@
     apt:
       pkg:
         - docker
-        - docker-compose
         - cifs-utils
         - smbclient
         - samba
