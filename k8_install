@@ -6,7 +6,7 @@
 
 # Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
 
-- hosts: k8
+- hosts: all
   become: true
   tasks:
   - name: Install all packages needed for docker host
@@ -59,13 +59,13 @@
 
   - name: Start the node cluster
     shell: microk8s add-node
-      register: shell_result
+    register: shell_result
 
   - name: Key to join cluster
-    debug:
+    debugger:
     var: shell_result.stdout_lines
 
- - name: Creating Pods file                                            #Variable, can change to your docker-compose.yml file if needed
+  - name: Creating Pods file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
       dest: /home/torrent/radarr.yaml
       content: |
