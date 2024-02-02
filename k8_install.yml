@@ -9,7 +9,7 @@
 - hosts: all
   become: true
   tasks:
-  - name: Install all packages needed for docker host
+  - name: Install all packages for the host
     apt:
       pkg:
         - docker
@@ -22,19 +22,19 @@
       name: microk8s
       classic: yes
 
-  - name: Check for the docker user
+  - name: Check for the Docker user
     ansible.builtin.stat:
       path: /home/torrent
     register: dockerUser
 
-  - name: Make the docker user
+  - name: Make the Docker user
     ansible.builtin.user:
       name: torrent
       comment: docker user
       uid: 666
     when: dockerUser.stat.exists == False
  
-  - name: Check the mount of docker servers
+  - name: Check the mount of the Docker Raid
     ansible.builtin.stat:
       path: /mnt/Media
     register: mount
@@ -45,7 +45,7 @@
       mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
-  - name: Creating Docker environment
+  - name: Creating Docker environment (installing Microk8s)
     shell: |
       sudo usermod -a -G microk8s torrent
       sudo chown -f -R torrent ~/.kube
@@ -57,13 +57,9 @@
       microk8s kubectl get all --all-namespaces
       microk8s dashboard-proxy &
 
-  - name: Start the node cluster
+  - name: Starting the Cluster
     shell: microk8s add-node
     register: shell_result
-
-  - name: Key to join cluster
-    debugger:
-    var: shell_result.stdout_lines
 
   - name: Creating Pods file                                            #Variable, can change to your docker-compose.yml file if needed
     copy:
@@ -81,4 +77,7 @@
   - name: apt update
     apt:
       upgrade: yes
+
+  - debug:
+      var: shell_result.stdout_lines
 
