@@ -47,6 +47,7 @@
 
   - name: Creating Docker environment (installing Microk8s)
     shell: |
+      sudo swapoff -a
       sudo usermod -a -G microk8s torrent
       sudo chown -f -R torrent ~/.kube
       su - torrent
