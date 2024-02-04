@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex-deployment
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+      - name: radarr
+        image: lscr.io/linuxserver/radarr
+        ports:
+        - containerPort: 7878
+      - name: sonarr
+        image: lscr.io/linuxserver/sonarr
+        ports:
+        - containerPort: 8989
+      - name: jackett
+        image: lscr.io/linuxserver/jackett
+        ports:
+        - containerPort: 9117
+      - name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent
+        ports:
+        - containerPort: 8080
+        - containerPort: 6881
+        - containerPort: 6881/udp
+      - name: heimdall
+        image: linuxserver/heimdall
+        ports:
+        - containerPort: 443
