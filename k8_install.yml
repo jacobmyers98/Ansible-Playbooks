@@ -1,7 +1,7 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 2/1/2024
+# Last edited on: 2/5/2024
 # Educational purposes only
 
 # Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
@@ -24,28 +24,28 @@
 
   - name: Check for the Docker user
     ansible.builtin.stat:
-      path: /home/torrent
+      path: /home/server
     register: dockerUser
 
-  - name: Make the Docker user
+  - name: Make the K8 user
     ansible.builtin.user:
-      name: torrent
+      name: server
       comment: docker user
       uid: 666
     when: dockerUser.stat.exists == False
  
-  - name: Check the mount of the Docker Raid
+  - name: Check the mount of the network Raid
     ansible.builtin.stat:
       path: /mnt/Media
     register: mount
 
-  - name: Mounting network drives
+  - name: Mounting network Raid
     shell: |
       mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
       mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
     when: mount.stat.exists == False
 
-  - name: Creating Docker environment (installing Microk8s)
+  - name: Creating K8 environment (installing Microk8s)
     shell: |
       sudo swapoff -a
       sudo usermod -a -G microk8s torrent
@@ -62,7 +62,7 @@
     shell: microk8s add-node
     register: shell_result
 
-  - name: Creating Pods file                                            #Variable, can change to your docker-compose.yml file if needed
+  - name: Creating K8s file (deployment)
     copy:
       dest: /home/torrent/radarr.yaml
       content: |
