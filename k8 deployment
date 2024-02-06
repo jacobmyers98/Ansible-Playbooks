@@ -55,6 +55,10 @@ spec:
       containers:
       - name: radarr
         image: lscr.io/linuxserver/radarr:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
         ports:
         - containerPort: 7878
         volumeMounts:
@@ -62,14 +66,26 @@ spec:
           name: radarr-config
       - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
         ports:
         - containerPort: 8989
       - name: jackett
         image: lscr.io/linuxserver/jackett:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
         ports:
         - containerPort: 9117
       - name: qbittorrent
         image: lscr.io/linuxserver/qbittorrent:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
         ports:
         - protocol: TCP
           containerPort: 8080
@@ -79,6 +95,10 @@ spec:
           containerPort: 6881
       - name: heimdall
         image: linuxserver/heimdall:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
         ports:
         - containerPort: 443
       volumes:
