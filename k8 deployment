@@ -58,8 +58,8 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 300m
+            memory: 400Mi
         ports:
         - containerPort: 7878
         volumeMounts:
@@ -70,8 +70,8 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 300m
+            memory: 400Mi
         ports:
         - containerPort: 8989
       - name: jackett
@@ -79,8 +79,8 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 500m
+            memory: 500Mi
         ports:
         - containerPort: 9117
       - name: qbittorrent
@@ -88,8 +88,8 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 500m
+            memory: 500Mi
         ports:
         - protocol: TCP
           containerPort: 8080
@@ -102,8 +102,8 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 300m
+            memory: 400Mi
         ports:
         - containerPort: 443
       volumes:
