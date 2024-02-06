@@ -1,3 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: port-service
+spec:
+  ports:
+    - port: 7878
+      targetPort: 7878
+    - port:8989
+      targetPort: 8989
+    - port: 9117
+      targetPort: 9117
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - protocol: TCP
+      port: 6881
+      targetPort: 6881
+    - protocol: UDP
+      port: 6881
+      targetPort: 6881
+    - port: 80 # Host port
+      targetPort: 443 # Pod port
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,6 +49,9 @@ spec:
         image: lscr.io/linuxserver/radarr:latest
         ports:
         - containerPort: 7878
+        volumeMounts:
+        - mountPath: /config
+          name: radarr-mount
       - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
         ports:
@@ -45,17 +73,7 @@ spec:
         image: linuxserver/heimdall:latest
         ports:
         - containerPort: 443
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: 
-  labels:
-    run: my-nginx
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
-  selector:
-    run: my-nginx
+      volumes:
+      - name: radarr
+        hostPath:
+          path: /home/server/docker/radarr
