@@ -51,7 +51,7 @@ spec:
         - containerPort: 7878
         volumeMounts:
         - mountPath: /config
-          name: radarr-mount
+          name: radarr-config
       - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
         ports:
@@ -74,6 +74,6 @@ spec:
         ports:
         - containerPort: 443
       volumes:
-      - name: radarr
+      - name: radarr-config
         hostPath:
-          path: /home/server/docker/radarr
+          path: /home/server/docker/radarr/config
