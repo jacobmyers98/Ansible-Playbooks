@@ -34,6 +34,7 @@ apiVersion: apps/v1    #kubectl api-resources | grep {kind}
 kind: Deployment
 metadata:
   name: plex-deployment
+  namespace: plex
   labels:
     app: plex
 spec:
