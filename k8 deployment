@@ -4,26 +4,33 @@ metadata:
   name: port-service
 spec:
   ports:
-    - port: 7878
+    - name: radarr-port
+      port: 7878
       targetPort: 7878
-    - port:8989
+    - name: sonarr-port
+      port: 8989
       targetPort: 8989
-    - port: 9117
+    - name: jackett-port
+      port: 9117
       targetPort: 9117
-    - protocol: TCP
+    - name: qbittorrent-port
+      protocol: TCP
       port: 8080
       targetPort: 8080
-    - protocol: TCP
+    - name: qbittorrent-port2
+      protocol: TCP
       port: 6881
       targetPort: 6881
-    - protocol: UDP
+    - name: qbittorrent-port3
+      protocol: UDP
       port: 6881
       targetPort: 6881
-    - port: 80 # Host port
+    - name: heimdall-port
+      port: 80 # Host port
       targetPort: 443 # Pod port
 
 ---
-apiVersion: v1
+apiVersion: apps/v1    #kubectl api-resources | grep {kind}
 kind: Deployment
 metadata:
   name: plex-deployment
