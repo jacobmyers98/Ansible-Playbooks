@@ -6,6 +6,11 @@ metadata:
     app: plex
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: plex
@@ -16,24 +21,41 @@ spec:
     spec:
       containers:
       - name: radarr
-        image: lscr.io/linuxserver/radarr
+        image: lscr.io/linuxserver/radarr:latest
         ports:
         - containerPort: 7878
       - name: sonarr
-        image: lscr.io/linuxserver/sonarr
+        image: lscr.io/linuxserver/sonarr:latest
         ports:
         - containerPort: 8989
       - name: jackett
-        image: lscr.io/linuxserver/jackett
+        image: lscr.io/linuxserver/jackett:latest
         ports:
         - containerPort: 9117
       - name: qbittorrent
-        image: lscr.io/linuxserver/qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
         ports:
-        - containerPort: 8080
-        - containerPort: 6881
-        - containerPort: 6881/udp
+        - protocol: TCP
+          containerPort: 8080
+        - protocol: TCP
+          containerPort: 6881
+        - protocol: UDP
+          containerPort: 6881
       - name: heimdall
-        image: linuxserver/heimdall
+        image: linuxserver/heimdall:latest
         ports:
         - containerPort: 443
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: 
+  labels:
+    run: my-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: my-nginx
