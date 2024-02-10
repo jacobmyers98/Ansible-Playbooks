@@ -29,7 +29,7 @@ spec:
     - name: heimdall-port
       port: 81 # Host port
       targetPort: 443 # Pod port
-  type: LoadBalancer
+  type: NodePort
 
 ---
 apiVersion: apps/v1    #kubectl api-resources | grep {kind}
