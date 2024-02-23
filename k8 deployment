@@ -8,28 +8,34 @@ spec:
     - name: radarr-port
       port: 7878
       targetPort: 7878
+      nodePort: 30001
     - name: sonarr-port
       port: 8989
       targetPort: 8989
+      nodePort: 30002
     - name: jackett-port
       port: 9117
       targetPort: 9117
+      nodePort: 30003
     - name: qbittorrent-port
       protocol: TCP
       port: 82
       targetPort: 8080
+      nodePort: 30004
     - name: qbittorrent-port2
       protocol: TCP
       port: 6881
       targetPort: 6881
+      nodePort: 30005
     - name: qbittorrent-port3
       protocol: UDP
       port: 6881
       targetPort: 6881
+      nodePort: 30006
     - name: heimdall-port
       port: 81 # Host port
       targetPort: 443 # Pod port
-  type: NodePort
+      nodePort: 30007
 
 ---
 apiVersion: apps/v1    #kubectl api-resources | grep {kind}
