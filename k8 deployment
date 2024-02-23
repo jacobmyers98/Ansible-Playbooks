@@ -36,6 +36,7 @@ spec:
       port: 81 # Host port
       targetPort: 443 # Pod port
       nodePort: 30007
+  type: NodePort
 
 ---
 apiVersion: apps/v1    #kubectl api-resources | grep {kind}
