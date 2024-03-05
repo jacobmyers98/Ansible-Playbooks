@@ -47,13 +47,6 @@ metadata:
   labels:
     app: plex
 spec:
-  hard:
-    requests.cpu: "1" 
-    requests.memory: 1Gi 
-    requests.ephemeral-storage: 2Gi 
-    limits.cpu: "2" 
-    limits.memory: 2Gi 
-    limits.ephemeral-storage: 4G
   replicas: 1
   strategy:
     type: RollingUpdate
