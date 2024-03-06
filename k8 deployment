@@ -131,20 +131,3 @@ spec:
       - name: radarr-config
         hostPath:
           path: /home/server/docker/radarr/config
-
----
-
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: compute-resources
-  namespace: plex
-spec:
-  hard:
-    pods: "4"
-    requests.cpu: "1"
-    requests.memory: 1Gi
-    requests.ephemeral-storage: 2Gi
-    limits.cpu: "2"
-    limits.memory: 2Gi
-    limits.ephemeral-storage: 4Gi
