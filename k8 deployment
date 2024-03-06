@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: port-service
   namespace: plex
+  labels:
+    app: plex
 spec:
   ports:
     - name: radarr-port
@@ -33,9 +35,11 @@ spec:
       targetPort: 6881
       nodePort: 30006
     - name: heimdall-port
-      port: 81 # Host port
+      port: 443 # Host port
       targetPort: 443 # Pod port
       nodePort: 30007
+  selector: #Label selector used to identify pods
+    app: plex
   type: NodePort
 
 ---
@@ -119,3 +123,20 @@ spec:
       - name: radarr-config
         hostPath:
           path: /home/server/docker/radarr/config
+
+---
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+  namespace: plex
+spec:
+  hard:
+    pods: "4"
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    requests.ephemeral-storage: 2Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    limits.ephemeral-storage: 4Gi
