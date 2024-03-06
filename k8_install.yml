@@ -56,6 +56,8 @@
       microk8s enable dns
       microk8s enable ingress
       microk8s kubectl get all --all-namespaces
+      microk8s kubectl create namespace plex
+      microk8s kubectl config set-context --current --namespace=plex
       microk8s dashboard-proxy &
 
   - name: Starting the Cluster
