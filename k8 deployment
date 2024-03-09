@@ -131,3 +131,4 @@ spec:
       - name: radarr-config
         hostPath:
           path: /home/server/docker/radarr/config
+          type: Directory
