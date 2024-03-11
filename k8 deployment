@@ -86,6 +86,10 @@ spec:
         volumeMounts:
         - mountPath: /config
           name: radarr-config
+        - mountPath: /mnt/Media
+          name: movies-shows-raid
+        - mountPath: /downloads
+          name: torrent-downloads
       - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
         imagePullPolicy: Always
@@ -95,6 +99,13 @@ spec:
             memory: 400Mi
         ports:
         - containerPort: 8989
+        volumeMounts:
+        - mountPath: /config
+          name: sonarr-config
+        - mountPath: /mnt/Media
+          name: movies-shows-raid
+        - mountPath: /downloads
+          name: torrent-downloads
       - name: jackett
         image: lscr.io/linuxserver/jackett:latest
         imagePullPolicy: Always
@@ -104,6 +115,13 @@ spec:
             memory: 500Mi
         ports:
         - containerPort: 9117
+        volumeMounts:
+        - mountPath: /config
+          name: jackett-config
+        - mountPath: /mnt/Media
+          name: movies-shows-raid
+        - mountPath: /downloads
+          name: torrent-downloads
       - name: qbittorrent
         image: lscr.io/linuxserver/qbittorrent:latest
         imagePullPolicy: Always
@@ -118,6 +136,13 @@ spec:
           containerPort: 6881
         - protocol: UDP
           containerPort: 6881
+        volumeMounts:
+        - mountPath: /config
+          name: qbit-config
+        - mountPath: /mnt/Media
+          name: movies-shows-raid
+        - mountPath: /downloads
+          name: torrent-downloads
       - name: heimdall
         image: linuxserver/heimdall:latest
         imagePullPolicy: Always
@@ -127,8 +152,35 @@ spec:
             memory: 400Mi
         ports:
         - containerPort: 443
+        volumeMounts:
+        - mountPath: /config
+          name: heimdall-config
       volumes:
       - name: radarr-config
         hostPath:
           path: /home/server/docker/radarr/config
+          type: Directory
+      - name: sonarr-config
+        hostPath:
+          path: /home/server/docker/sonarr/config
+          type: Directory
+      - name: jackett-config
+        hostPath:
+          path: /home/server/docker/jackett/config
+          type: Directory
+      - name: qbit-config
+        hostPath:
+          path: /home/server/docker/qbittorrent/config
+          type: Directory
+      - name: heimdall-config
+        hostPath:
+          path: /home/server/docker/heimdall/config
+          type: Directory
+      - name: movies-shows-raid
+        hostPath:
+          path: /mnt/Media
+          type: Directory
+      - name: torrent-downloads
+        hostPath:
+          path: /downloads
           type: Directory
