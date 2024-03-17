@@ -13,189 +13,189 @@
     copy:
       dest: /home/server/K8-Deployment.yaml
       content: |
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: plex
-  labels:
-    name: plex
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: plex
+          labels:
+            name: plex
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: port-service
-  namespace: plex
-  labels:
-    app: plex
-spec:
-  ports:
-    - name: radarr-port
-      port: 7878
-      targetPort: 7878
-      nodePort: 30001
-    - name: sonarr-port
-      port: 8989
-      targetPort: 8989
-      nodePort: 30002
-    - name: jackett-port
-      port: 9117
-      targetPort: 9117
-      nodePort: 30003
-    - name: qbittorrent-port
-      protocol: TCP
-      port: 82
-      targetPort: 8080
-      nodePort: 30004
-    - name: qbittorrent-port2
-      protocol: TCP
-      port: 6881
-      targetPort: 6881
-      nodePort: 30005
-    - name: qbittorrent-port3
-      protocol: UDP
-      port: 6881
-      targetPort: 6881
-      nodePort: 30006
-    - name: heimdall-port
-      port: 443 # Host port
-      targetPort: 443 # Pod port
-      nodePort: 30007
-  selector: #Label selector used to identify pods
-    app: plex
-  type: NodePort
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          ports:
+            - name: radarr-port
+              port: 7878
+              targetPort: 7878
+              nodePort: 30001
+            - name: sonarr-port
+              port: 8989
+              targetPort: 8989
+              nodePort: 30002
+            - name: jackett-port
+              port: 9117
+              targetPort: 9117
+              nodePort: 30003
+            - name: qbittorrent-port
+              protocol: TCP
+              port: 82
+              targetPort: 8080
+              nodePort: 30004
+            - name: qbittorrent-port2
+              protocol: TCP
+              port: 6881
+              targetPort: 6881
+              nodePort: 30005
+            - name: qbittorrent-port3
+              protocol: UDP
+              port: 6881
+              targetPort: 6881
+              nodePort: 30006
+            - name: heimdall-port
+              port: 443 # Host port
+              targetPort: 443 # Pod port
+              nodePort: 30007
+          selector: #Label selector used to identify pods
+            app: plex
+          type: NodePort
 
----
-apiVersion: apps/v1    #kubectl api-resources | grep {kind}
-kind: Deployment
-metadata:
-  name: plex-deployment
-  namespace: plex
-  labels:
-    app: plex
-spec:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-  selector:
-    matchLabels:
-      app: plex
-  template:
-    metadata:
-      labels:
-        app: plex
-    spec:
-      containers:
-      - name: radarr
-        image: lscr.io/linuxserver/radarr:latest
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: 300m
-            memory: 400Mi
-        ports:
-        - containerPort: 7878
-        volumeMounts:
-        - mountPath: /config
-          name: radarr-config
-        - mountPath: /mnt/Media
-          name: movies-shows-raid
-        - mountPath: /downloads
-          name: torrent-downloads
-      - name: sonarr
-        image: lscr.io/linuxserver/sonarr:latest
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: 300m
-            memory: 400Mi
-        ports:
-        - containerPort: 8989
-        volumeMounts:
-        - mountPath: /config
-          name: sonarr-config
-        - mountPath: /mnt/Media
-          name: movies-shows-raid
-        - mountPath: /downloads
-          name: torrent-downloads
-      - name: jackett
-        image: lscr.io/linuxserver/jackett:latest
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: 500m
-            memory: 500Mi
-        ports:
-        - containerPort: 9117
-        volumeMounts:
-        - mountPath: /config
-          name: jackett-config
-        - mountPath: /mnt/Media
-          name: movies-shows-raid
-        - mountPath: /downloads
-          name: torrent-downloads
-      - name: qbittorrent
-        image: lscr.io/linuxserver/qbittorrent:latest
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: 500m
-            memory: 500Mi
-        ports:
-        - protocol: TCP
-          containerPort: 8080
-        - protocol: TCP
-          containerPort: 6881
-        - protocol: UDP
-          containerPort: 6881
-        volumeMounts:
-        - mountPath: /config
-          name: qbit-config
-        - mountPath: /mnt/Media
-          name: movies-shows-raid
-        - mountPath: /downloads
-          name: torrent-downloads
-      - name: heimdall
-        image: linuxserver/heimdall:latest
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: 300m
-            memory: 400Mi
-        ports:
-        - containerPort: 443
-        volumeMounts:
-        - mountPath: /config
-          name: heimdall-config
-      volumes:
-      - name: radarr-config
-        hostPath:
-          path: /home/server/docker/radarr/config
-          type: Directory
-      - name: sonarr-config
-        hostPath:
-          path: /home/server/docker/sonarr/config
-          type: Directory
-      - name: jackett-config
-        hostPath:
-          path: /home/server/docker/jackett/config
-          type: Directory
-      - name: qbit-config
-        hostPath:
-          path: /home/server/docker/qbittorrent/config
-          type: Directory
-      - name: heimdall-config
-        hostPath:
-          path: /home/server/docker/heimdall/config
-          type: Directory
-      - name: movies-shows-raid
-        hostPath:
-          path: /mnt/Media
-          type: Directory
-      - name: torrent-downloads
-        hostPath:
-          path: /downloads
-          type: Directory
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+          spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 1
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+            template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+              - name: radarr
+                image: lscr.io/linuxserver/radarr:latest
+                imagePullPolicy: Always
+                  resources:
+                  limits:
+                    cpu: 300m
+                    memory: 400Mi
+                ports:
+                - containerPort: 7878
+                volumeMounts:
+                - mountPath: /config
+                  name: radarr-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              - name: sonarr
+                image: lscr.io/linuxserver/sonarr:latest
+                imagePullPolicy: Always
+                resources:
+                  limits:
+                    cpu: 300m
+                    memory: 400Mi
+                ports:
+                - containerPort: 8989
+                volumeMounts:
+                - mountPath: /config
+                  name: sonarr-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              - name: jackett
+                image: lscr.io/linuxserver/jackett:latest
+                imagePullPolicy: Always
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 500Mi
+                ports:
+                - containerPort: 9117
+                volumeMounts:
+                - mountPath: /config
+                  name: jackett-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              - name: qbittorrent
+                image: lscr.io/linuxserver/qbittorrent:latest
+                imagePullPolicy: Always
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 500Mi
+                ports:
+                - protocol: TCP
+                  containerPort: 8080
+                - protocol: TCP
+                  containerPort: 6881
+                - protocol: UDP
+                  containerPort: 6881
+                volumeMounts:
+                - mountPath: /config
+                  name: qbit-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              - name: heimdall
+                image: linuxserver/heimdall:latest
+                imagePullPolicy: Always
+                resources:
+                  limits:
+                    cpu: 300m
+                    memory: 400Mi
+                ports:
+                - containerPort: 443
+                volumeMounts:
+                - mountPath: /config
+                  name: heimdall-config
+              volumes:
+              - name: radarr-config
+                hostPath:
+                  path: /home/server/docker/radarr/config
+                  type: Directory
+              - name: sonarr-config
+                hostPath:
+                  path: /home/server/docker/sonarr/config
+                  type: Directory
+              - name: jackett-config
+                hostPath:
+                  path: /home/server/docker/jackett/config
+                  type: Directory
+              - name: qbit-config
+                hostPath:
+                  path: /home/server/docker/qbittorrent/config
+                  type: Directory
+              - name: heimdall-config
+                hostPath:
+                  path: /home/server/docker/heimdall/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
