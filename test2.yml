@@ -1,0 +1,19 @@
+- hosts: all
+  become: true
+  tasks:
+  - name: Install all packages for the host
+    shell:
+      cmd: "echo $HOME"
+    register: VAR
+
+  - name: Echo example 2
+    shell:
+      cmd: "echo {{ VAR.stdout_lines }}"
+    register: result
+
+  - name: Show registered variable
+    debug:
+      var: result
+
+  - name: Show result content only
+    shell: mkdir {{ result }}/test
