@@ -7,5 +7,4 @@
     register: VAR
 
   - name: Show result content only
-    debug:
     shell: mkdir {{ VAR }}/test
