@@ -2,8 +2,7 @@
   become: false
   tasks:
   - name: Install all packages for the host
-    shell:
-      cmd: "echo $HOME"
+    shell: echo $HOME
     register: VAR
 
   - name: Show result content only
