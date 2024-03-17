@@ -12,7 +12,6 @@
   - name: Install all packages for the host
     apt:
       pkg:
-        - docker
         - cifs-utils
         - smbclient
         - samba
