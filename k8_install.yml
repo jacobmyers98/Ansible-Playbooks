@@ -52,6 +52,17 @@
       sudo usermod -a -G microk8s server
       sudo chown -f -R server ~/.kube
       su - server
+      mkdir /home/server/docker
+      mkdir /home/server/docker/heimdall
+      mkdir /home/server/docker/heimdall/config
+      mkdir /home/server/docker/radarr
+      mkdir /home/server/docker/radarr/config
+      mkdir /home/server/docker/sonarr
+      mkdir /home/server/docker/sonarr/config
+      mkdir /home/server/docker/qbittorrent
+      mkdir /home/server/docker/qbittorrent/config
+      mkdir /home/server/docker/jackett
+      mkdir /home/server/docker/jackett/config
       microk8s start
       microk8s enable dashboard
       microk8s enable dns
@@ -148,9 +159,9 @@
                 image: lscr.io/linuxserver/radarr:latest
                 imagePullPolicy: Always
                   resources:
-                  limits:
-                    cpu: 300m
-                    memory: 400Mi
+                    limits:
+                      cpu: 300m
+                      memory: 400Mi
                 ports:
                 - containerPort: 7878
                 volumeMounts:
