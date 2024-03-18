@@ -1,8 +1,9 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 2/5/2024
+# Last edited on: 3/18/2024
 # Educational purposes only
+# ansible-playbook ./k8_install.yml -i ./inventory.ini 
 
 # Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
 
