@@ -3,6 +3,7 @@
 # Author: Jacob M
 # Last edited on: 1/23/2024
 # Educational purposes only
+# ansible-playbook -u 'username' Playbooks/CopyAndRemove.yaml -l 'hostname' --connection=local
 
 # Docker install with configuration and mounting. For Ubuntu 22.04 Server
 
