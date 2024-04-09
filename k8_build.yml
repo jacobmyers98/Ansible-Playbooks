@@ -9,6 +9,8 @@
 
 - hosts: all
   become: true
+  vars:
+    username: server
   tasks:
   - name: Install all packages for the host
     apt:
@@ -29,9 +31,10 @@
 
   - name: Make the K8 user
     ansible.builtin.user:
-      name: server
+      name: "{{ username }}"
       comment: docker user
       uid: 666
+      state: present
     when: dockerUser.stat.exists == False
  
   - name: Check the mount of the network Raid
