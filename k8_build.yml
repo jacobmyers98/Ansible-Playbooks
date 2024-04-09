@@ -1,7 +1,7 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 3/18/2024
+# Last edited on: 4/9/2024
 # Educational purposes only
 # ansible-playbook ./k8_install.yml -i ./inventory.ini 
 
@@ -26,7 +26,7 @@
 
   - name: Check for the Docker user
     ansible.builtin.stat:
-      path: /home/server
+      path: /home/"{{ username }}"
     register: dockerUser
 
   - name: Make the K8 user
@@ -80,7 +80,7 @@
 
   - name: Creating K8s file (deployment)
     copy:
-      dest: /home/server/K8-Deployment.yaml
+      dest: /home/"{{ username }}"/K8-Deployment.yaml
       content: |
         apiVersion: v1
         kind: Namespace
