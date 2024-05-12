@@ -135,6 +135,7 @@
           selector: #Label selector used to identify pods
             app: plex
           type: NodePort
+          
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -160,7 +161,7 @@
             spec:
               containers:
               - name: radarr
-                image: lscr.io/linuxserver/radarr:latest
+                image: lscr.io/linuxserver/radarr:5.4.6.8723-ls217
                 imagePullPolicy: Always
                   resources:
                     limits:
@@ -188,6 +189,7 @@
                 hostPath:
                   path: /downloads
                   type: Directory
+                  
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -213,7 +215,7 @@
             spec:
               containers:
               - name: sonarr
-                image: lscr.io/linuxserver/sonarr:latest
+                image: lscr.io/linuxserver/sonarr:4.0.4.1491-ls238
                 imagePullPolicy: Always
                 resources:
                   limits:
@@ -241,6 +243,7 @@
                 hostPath:
                   path: /downloads
                   type: Directory
+                  
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -266,7 +269,7 @@
             spec:
               containers:
               - name: jackett
-                image: lscr.io/linuxserver/jackett:latest
+                image: lscr.io/linuxserver/jackett:v0.21.2586-ls398
                 imagePullPolicy: Always
                 resources:
                   limits:
@@ -294,6 +297,7 @@
                 hostPath:
                   path: /downloads
                   type: Directory
+                  
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -319,7 +323,7 @@
             spec:
               containers:
               - name: qbittorrent
-                image: lscr.io/linuxserver/qbittorrent:latest
+                image: lscr.io/linuxserver/qbittorrent:4.6.4-r1-ls329
                 imagePullPolicy: Always
                 resources:
                   limits:
@@ -352,6 +356,7 @@
                 hostPath:
                   path: /downloads
                   type: Directory
+                  
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -377,7 +382,7 @@
             spec:
               containers:
               - name: heimdall
-                image: linuxserver/heimdall:latest
+                image: linuxserver/heimdall:v2.6.1-ls266
                 imagePullPolicy: Always
                 resources:
                   limits:
