@@ -7,7 +7,7 @@
 
 # Docker install with configuration and mounting. For Ubuntu 22.04 Server
 
-- hosts: docker
+- hosts: all
   become: true
   tasks:
   - name: Install all packages needed for docker host
