@@ -133,12 +133,11 @@
           selector: #Label selector used to identify pods
             app: plex
           type: NodePort
-
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: plex-deployment
+          name: radarr-plex-deployment
           namespace: plex
           labels:
             app: plex
@@ -147,7 +146,7 @@
           strategy:
             type: RollingUpdate
             rollingUpdate:
-              maxSurge: 1
+              maxSurge: 2
               maxUnavailable: 1
           selector:
             matchLabels:
@@ -174,6 +173,43 @@
                   name: movies-shows-raid
                 - mountPath: /downloads
                   name: torrent-downloads
+              volumes:
+              - name: radarr-config
+                hostPath:
+                  path: /home/server/docker/radarr/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: sonarr-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+          spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+            template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
               - name: sonarr
                 image: lscr.io/linuxserver/sonarr:latest
                 imagePullPolicy: Always
@@ -190,6 +226,43 @@
                   name: movies-shows-raid
                 - mountPath: /downloads
                   name: torrent-downloads
+              volumes:
+              - name: sonarr-config
+                hostPath:
+                  path: /home/server/docker/sonarr/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: jackett-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+          spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+            template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
               - name: jackett
                 image: lscr.io/linuxserver/jackett:latest
                 imagePullPolicy: Always
@@ -206,6 +279,43 @@
                   name: movies-shows-raid
                 - mountPath: /downloads
                   name: torrent-downloads
+              volumes:
+              - name: jackett-config
+                hostPath:
+                  path: /home/server/docker/jackett/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: qbit-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+          spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+            template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
               - name: qbittorrent
                 image: lscr.io/linuxserver/qbittorrent:latest
                 imagePullPolicy: Always
@@ -227,6 +337,43 @@
                   name: movies-shows-raid
                 - mountPath: /downloads
                   name: torrent-downloads
+              volumes:
+              - name: qbit-config
+                hostPath:
+                  path: /home/server/docker/qbittorrent/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: heimdall-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+          spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+            template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
               - name: heimdall
                 image: linuxserver/heimdall:latest
                 imagePullPolicy: Always
@@ -240,23 +387,6 @@
                 - mountPath: /config
                   name: heimdall-config
               volumes:
-              - name: radarr-config
-                hostPath:
-                  path: /home/server/docker/radarr/config
-                  type: Directory
-              - name: sonarr-config
-                hostPath:
-                  path: /home/server/docker/sonarr/config
-                  type: Directory
-              - name: jackett-config
-                hostPath:
-                  path: /home/server/docker/jackett/config
-                  type: Directory
-              - name: qbit-config
-                hostPath:
-                  path: /home/server/docker/qbittorrent/config
-                  type: Directory
-              - name: heimdall-config
                 hostPath:
                   path: /home/server/docker/heimdall/config
                   type: Directory
