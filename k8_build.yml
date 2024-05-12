@@ -20,6 +20,8 @@
         - samba
       state: latest
       update_cache: true
+
+  - name: Install Snap packages
     community.general.snap:
       name: microk8s
       classic: yes
