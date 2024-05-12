@@ -163,10 +163,10 @@
               - name: radarr
                 image: lscr.io/linuxserver/radarr:5.4.6.8723-ls217
                 imagePullPolicy: Always
-                  resources:
-                    limits:
-                      cpu: 300m
-                      memory: 400Mi
+                resources:
+                  limits:
+                    cpu: 300m
+                    memory: 400Mi
                 ports:
                 - containerPort: 7878
                 volumeMounts:
