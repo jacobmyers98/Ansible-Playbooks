@@ -28,7 +28,7 @@
 
   - name: Check for the Docker user
     ansible.builtin.stat:
-      path: /home/"{{ username }}"
+      path: "/home/{{ username }}"
     register: dockerUser
 
   - name: Make the K8 user
@@ -82,7 +82,7 @@
 
   - name: Creating K8s file (deployment)
     copy:
-      dest: /home/"{{ username }}"/K8-Deployment.yaml
+      dest: "/home/{{ username }}/K8-Deployment.yaml"
       content: |
         apiVersion: v1
         kind: Namespace
