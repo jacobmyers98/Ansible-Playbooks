@@ -1,9 +1,0 @@
-- hosts: all
-  become: false
-  tasks:
-  - name: Install all packages for the host
-    shell: echo $HOME
-    register: VAR
-
-  - name: Show result content only
-    shell: mkdir {{ VAR }}/test
