@@ -394,6 +394,7 @@
                 - mountPath: /config
                   name: heimdall-config
               volumes:
+              - name: heimdall-config
                 hostPath:
                   path: /home/server/docker/heimdall/config
                   type: Directory
