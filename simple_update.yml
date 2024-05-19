@@ -3,10 +3,11 @@
 # Author: Jacob M
 # Last edited on: 1/23/2024
 # Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
-# ansible-playbook Playbooks/simple_update.yml
 # ansible playbook to update docker containers and pterodactyl containers
 - hosts: all
+  connection: local
   become: true
   tasks:
   - name: apt update
