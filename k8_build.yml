@@ -70,6 +70,7 @@
       microk8s kubectl get all --all-namespaces
       microk8s kubectl config set-context --current --namespace=plex
       microk8s dashboard-proxy &
+    debugger: always
 
   - name: Starting the Cluster
     shell: microk8s add-node
