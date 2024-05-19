@@ -1,7 +1,9 @@
 ---
 # Install for Matlab from an ISO image
+# ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
 - hosts: 'to'
+  connection: local
   become: true
   tasks:
   - name: Checking for install of matlab
