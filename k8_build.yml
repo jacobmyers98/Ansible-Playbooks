@@ -58,17 +58,11 @@
       sudo usermod -a -G microk8s server
       sudo chown -f -R "{{ username }}" ~/.kube
       su - "{{ username }}"
-      mkdir /home/"{{ username }}"/docker
-      mkdir /home/"{{ username }}"/docker/heimdall
-      mkdir /home/"{{ username }}"/docker/heimdall/config
-      mkdir /home/"{{ username }}"/docker/radarr
-      mkdir /home/"{{ username }}"/docker/radarr/config
-      mkdir /home/"{{ username }}"/docker/sonarr
-      mkdir /home/"{{ username }}"/docker/sonarr/config
-      mkdir /home/"{{ username }}"/docker/qbittorrent
-      mkdir /home/"{{ username }}"/docker/qbittorrent/config
-      mkdir /home/"{{ username }}"/docker/jackett
-      mkdir /home/"{{ username }}"/docker/jackett/config
+      mkdir -p /home/"{{ username }}"/docker/heimdall/config
+      mkdir -p /home/"{{ username }}"/docker/radarr/config
+      mkdir -p /home/"{{ username }}"/docker/sonarr/config
+      mkdir -p /home/"{{ username }}"/docker/qbittorrent/config
+      mkdir -p /home/"{{ username }}"/docker/jackett/config
       microk8s start
       microk8s enable dashboard
       microk8s enable dns
