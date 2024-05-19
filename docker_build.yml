@@ -3,10 +3,12 @@
 # Author: Jacob M
 # Last edited on: 1/30/2024
 # Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
 # Docker install with configuration and mounting. For Ubuntu 22.04 Server
 
 - hosts: all
+  connection: local
   become: true
   tasks:
   - name: Install all packages needed for docker host
