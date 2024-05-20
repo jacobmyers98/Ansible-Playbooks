@@ -140,20 +140,20 @@
           namespace: plex
           labels:
             app: plex
-          spec:
-            replicas: 1
-            strategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxSurge: 2
-                maxUnavailable: 1
-            selector:
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
             matchLabels:
                 app: plex
             template:
-            metadata:
-              labels:
-                app: plex
+              metadata:
+                labels:
+                  app: plex
             spec:
               containers:
               - name: radarr
@@ -194,20 +194,20 @@
           namespace: plex
           labels:
             app: plex
-          spec:
-            replicas: 1
-            strategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxSurge: 2
-                maxUnavailable: 1
-            selector:
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
             matchLabels:
                 app: plex
             template:
-            metadata:
-              labels:
-                app: plex
+              metadata:
+                labels:
+                  app: plex
             spec:
               containers:
               - name: sonarr
@@ -248,20 +248,20 @@
           namespace: plex
           labels:
             app: plex
-          spec:
-            replicas: 1
-            strategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxSurge: 2
-                maxUnavailable: 1
-            selector:
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
             matchLabels:
                 app: plex
             template:
-            metadata:
-              labels:
-                app: plex
+              metadata:
+                labels:
+                  app: plex
             spec:
               containers:
               - name: jackett
@@ -302,20 +302,20 @@
           namespace: plex
           labels:
             app: plex
-          spec:
-            replicas: 1
-            strategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxSurge: 2
-                maxUnavailable: 1
-            selector:
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
             matchLabels:
                 app: plex
             template:
-            metadata:
-              labels:
-                app: plex
+              metadata:
+                labels:
+                  app: plex
             spec:
               containers:
               - name: qbittorrent
@@ -361,20 +361,20 @@
           namespace: plex
           labels:
             app: plex
-          spec:
-            replicas: 1
-            strategy:
-              type: RollingUpdate
-              rollingUpdate:
-                maxSurge: 2
-                maxUnavailable: 1
-            selector:
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
             matchLabels:
                 app: plex
             template:
-            metadata:
-              labels:
-                app: plex
+              metadata:
+                labels:
+                  app: plex
             spec:
               containers:
               - name: heimdall
