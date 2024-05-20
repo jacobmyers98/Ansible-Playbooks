@@ -150,10 +150,10 @@
           selector:
             matchLabels:
                 app: plex
-            template:
-              metadata:
-                labels:
-                  app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
             spec:
               containers:
               - name: radarr
@@ -204,10 +204,10 @@
           selector:
             matchLabels:
                 app: plex
-            template:
-              metadata:
-                labels:
-                  app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
             spec:
               containers:
               - name: sonarr
@@ -258,10 +258,10 @@
           selector:
             matchLabels:
                 app: plex
-            template:
-              metadata:
-                labels:
-                  app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
             spec:
               containers:
               - name: jackett
@@ -312,10 +312,10 @@
           selector:
             matchLabels:
                 app: plex
-            template:
-              metadata:
-                labels:
-                  app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
             spec:
               containers:
               - name: qbittorrent
@@ -371,10 +371,10 @@
           selector:
             matchLabels:
                 app: plex
-            template:
-              metadata:
-                labels:
-                  app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
             spec:
               containers:
               - name: heimdall
