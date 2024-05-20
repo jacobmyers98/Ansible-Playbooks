@@ -141,13 +141,13 @@
           labels:
             app: plex
           spec:
-          replicas: 1
-          strategy:
-            type: RollingUpdate
-            rollingUpdate:
-              maxSurge: 2
-              maxUnavailable: 1
-          selector:
+            replicas: 1
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 2
+                maxUnavailable: 1
+            selector:
             matchLabels:
                 app: plex
             template:
@@ -195,13 +195,13 @@
           labels:
             app: plex
           spec:
-          replicas: 1
-          strategy:
-            type: RollingUpdate
-            rollingUpdate:
-              maxSurge: 2
-              maxUnavailable: 1
-          selector:
+            replicas: 1
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 2
+                maxUnavailable: 1
+            selector:
             matchLabels:
                 app: plex
             template:
@@ -249,13 +249,13 @@
           labels:
             app: plex
           spec:
-          replicas: 1
-          strategy:
-            type: RollingUpdate
-            rollingUpdate:
-              maxSurge: 2
-              maxUnavailable: 1
-          selector:
+            replicas: 1
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 2
+                maxUnavailable: 1
+            selector:
             matchLabels:
                 app: plex
             template:
@@ -303,13 +303,13 @@
           labels:
             app: plex
           spec:
-          replicas: 1
-          strategy:
-            type: RollingUpdate
-            rollingUpdate:
-              maxSurge: 2
-              maxUnavailable: 1
-          selector:
+            replicas: 1
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 2
+                maxUnavailable: 1
+            selector:
             matchLabels:
                 app: plex
             template:
@@ -362,13 +362,13 @@
           labels:
             app: plex
           spec:
-          replicas: 1
-          strategy:
-            type: RollingUpdate
-            rollingUpdate:
-              maxSurge: 2
-              maxUnavailable: 1
-          selector:
+            replicas: 1
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 2
+                maxUnavailable: 1
+            selector:
             matchLabels:
                 app: plex
             template:
