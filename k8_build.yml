@@ -157,7 +157,7 @@
             spec:
               containers:
               - name: radarr
-                image: lscr.io/linuxserver/radarr:5.4.6.8723-ls217
+                image: lscr.io/linuxserver/radarr:5.6.0.8846-LS220
                 imagePullPolicy: Always
                 #resources:
                   #limits:
@@ -265,7 +265,7 @@
             spec:
               containers:
               - name: jackett
-                image: lscr.io/linuxserver/jackett:v0.21.2586-ls398
+                image: lscr.io/linuxserver/jackett:v0.21.2663-LS409
                 imagePullPolicy: Always
                 #resources:
                   #limits:
