@@ -12,15 +12,19 @@
   become: true
   vars:
     username: server
+    smbpw: 81255
   tasks:
   - name: Install all packages for the host
     apt:
       pkg:
-        - cifs-utils
-        - smbclient
         - samba
       state: latest
       update_cache: true
+
+  - lineinfile:
+    path: /etc/samba/smb.conf
+    regexp: '^Line1'
+    line: 'Line1 has changed'
 
   - name: Install Snap packages
     community.general.snap:
@@ -39,17 +43,6 @@
       uid: 666
       state: present
     when: dockerUser.stat.exists == False
- 
-  - name: Check the mount of the network Raid
-    ansible.builtin.stat:
-      path: /mnt/Media
-    register: mount
-
-  - name: Mounting network Raid
-    shell: |
-      mkdir /mnt/Media                                                       #Variable, could reference variable file if needed
-      mount -t cifs //192.168.0.10/Media /mnt/Media -o username=server       #Variable, could reference variable file if needed
-    when: mount.stat.exists == False
 
   - name: Creating K8 environment (installing Microk8s)
     shell: |
