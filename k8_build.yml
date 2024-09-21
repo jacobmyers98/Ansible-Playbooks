@@ -28,7 +28,9 @@
 
   - name: Install Snap packages
     community.general.snap:
-      name: microk8s
+      name: 
+      - microk8s
+      - kompose
       classic: yes
 
   - name: Check for the Docker user
