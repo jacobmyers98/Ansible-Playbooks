@@ -49,7 +49,7 @@
   - name: Creating K8 environment (installing Microk8s)
     shell: |
       sudo swapoff -a
-      alias kubectl='microk8s kubectl'
+      alias k='microk8s kubectl'
       sudo usermod -a -G microk8s server
       sudo chown -f -R "{{ username }}" ~/.kube
       su - "{{ username }}"
