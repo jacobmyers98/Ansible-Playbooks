@@ -26,13 +26,6 @@
     regexp: '^Line1'
     line: 'Line1 has changed'
 
-  - name: Install Snap packages
-    community.general.snap:
-      name: 
-      - microk8s
-      - kompose
-      classic: yes
-
   - name: Check for the Docker user
     ansible.builtin.stat:
       path: "/home/{{ username }}"
@@ -46,11 +39,14 @@
       state: present
     when: dockerUser.stat.exists == False
 
+  - name: Starting the Cluster
+    shell: curl -sfL https://get.k3s.io | sh -
+    register: shell_result
+
   - name: Creating K8 environment (installing Microk8s)
     shell: |
       sudo swapoff -a
-      alias k='microk8s kubectl'
-      sudo usermod -a -G microk8s server
+      alias k='kubectl'
       sudo chown -f -R "{{ username }}" ~/.kube
       su - "{{ username }}"
       mkdir -p "/home/{{ username }}/docker/heimdall/config"
@@ -58,18 +54,9 @@
       mkdir -p "/home/{{ username }}/docker/sonarr/config"
       mkdir -p "/home/{{ username }}/docker/qbittorrent/config"
       mkdir -p "/home/{{ username }}/docker/jackett/config"
-      microk8s start
-      microk8s enable dashboard
-      microk8s enable dns
-      microk8s enable ingress
-      microk8s kubectl get all --all-namespaces
-      microk8s kubectl config set-context --current --namespace=plex
-      microk8s dashboard-proxy &
+      kubectl get all --all-namespaces
+      kubectl config set-context --current --namespace=plex
     debugger: always
-
-  - name: Starting the Cluster
-    shell: microk8s add-node
-    register: shell_result
 
   - name: Creating K8s file (deployment)
     copy:
