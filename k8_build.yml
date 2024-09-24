@@ -287,10 +287,48 @@
               labels:
                 app: plex
             spec:
+              securityContext:
+                sysctls:
+                - name: net.ipv4.conf.all.src_valid_mark
+                  value: "1"
+                - name: net.ipv6.conf.all.disable_ipv6
+                  value: "1"
               containers:
-              - name: qbittorrent
-                image: lscr.io/linuxserver/qbittorrent:4.6.4-r1-ls329
+              - env:
+                - name: PRIVOXY_ENABLED
+                  value: "false"
+                - name: UNBOUND_ENABLED
+                  value: "false"
+                - name: VPN_AUTO_PORT_FORWARD
+                  value: "false"
+                - name: VPN_AUTO_PORT_FORWARD_TO_PORTS
+                - name: VPN_CONF
+                  value: wg0
+                - name: VPN_ENABLED
+                  value: "true"
+                - name: VPN_FIREWALL_TYPE
+                  value: auto
+                - name: VPN_HEALTHCHECK_ENABLED
+                  value: "true"
+                - name: VPN_KEEP_LOCAL_DNS
+                  value: "false"
+                - name: VPN_LAN_LEAK_ENABLED
+                  value: "false"
+                - name: VPN_LAN_NETWORK
+                  value: 192.168.1.0/24
+                - name: VPN_PROVIDER
+                  value: generic
+                image: hotio/qbittorrent
                 imagePullPolicy: Always
+                name: qbittorrent
+                resources:
+                securityContext:
+                  capabilities:
+                    add:
+                    - NET_ADMIN
+              hostname: hotio-qbit
+              restartPolicy: Always
+              serviceAccountName: ""
                 ports:
                 - protocol: TCP
                   containerPort: 8080
