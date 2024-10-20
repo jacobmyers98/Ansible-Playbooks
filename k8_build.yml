@@ -293,6 +293,10 @@
                   value: "1"
                 - name: net.ipv6.conf.all.disable_ipv6
                   value: "1"
+              initContainers:
+              - name: clean-wg0 
+              image: hotio/qbittorrent
+              command: ["/bin/sh", "-c", "ip link delete wg0 || true"]
               containers:
               - env:
                 - name: PRIVOXY_ENABLED
