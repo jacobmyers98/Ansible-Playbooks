@@ -1,0 +1,517 @@
+---
+
+# Author: Jacob M
+# Last edited on: 1/2/2025
+# Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
+
+# Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
+
+- hosts: all
+  connection: local
+  become: true
+  vars:
+    username: server
+    smbpw: 81255
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+
+    - name: Add Kubernetes GPG key
+      command: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add Kubernetes APT repository
+      copy:
+        content: |
+          deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
+        dest: /etc/apt/sources.list.d/kubernetes.list
+        mode: '0644'
+
+    - name: Update apt cache again after adding Kubernetes repo
+      apt:
+        update_cache: yes
+
+    - name: Install Kubernetes packages & samba
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+    - samba
+        state: present
+
+    - name: Hold Kubernetes packages
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: held
+
+    - lineinfile:
+      path: /etc/samba/smb.conf
+      regexp: '^Line1'
+      line: 'Line1 has changed'
+
+    - name: Check for the Docker user
+      ansible.builtin.stat:
+        path: "/home/{{ username }}"
+      register: dockerUser
+
+    - name: Make the K8 user
+      ansible.builtin.user:
+        name: "{{ username }}"
+        comment: docker user
+        uid: 666
+        state: present
+      when: dockerUser.stat.exists == False
+
+    - name: Starting the Cluster
+      shell: curl -sfL https://get.k3s.io | sh -
+      register: shell_result
+
+    - name: Creating K8 environment (installing Microk8s)
+      shell: |
+        sudo swapoff -a
+        sudo chown -f -R "{{ username }}" ~/.kube
+        su - "{{ username }}"
+        mkdir -p "/home/{{ username }}/docker/heimdall/config"
+        mkdir -p "/home/{{ username }}/docker/radarr/config"
+        mkdir -p "/home/{{ username }}/docker/sonarr/config"
+        mkdir -p "/home/{{ username }}/docker/qbittorrent/config"
+        mkdir -p "/home/{{ username }}/docker/jackett/config"
+        kubectl get all --all-namespaces
+        kubectl config set-context --current --namespace=plex
+      debugger: always
+
+    - name: Creating K8s file (deployment)
+      copy:
+        dest: "/home/{{ username }}/K8-Deployment.yaml"
+        content: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: plex
+            labels:
+              name: plex
+
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          ports:
+            - name: radarr-port
+              port: 7878
+              targetPort: 7878
+              nodePort: 30001
+            - name: sonarr-port
+              port: 8989
+              targetPort: 8989
+              nodePort: 30002
+            - name: jackett-port
+              port: 9117
+              targetPort: 9117
+              nodePort: 30003
+            - name: qbittorrent-port
+              protocol: TCP
+              port: 82
+              targetPort: 8080
+              nodePort: 30004
+            - name: qbittorrent-port2
+              protocol: TCP
+              port: 6881
+              targetPort: 6881
+              nodePort: 30005
+            - name: qbittorrent-port3
+              protocol: UDP
+              port: 6881
+              targetPort: 6881
+              nodePort: 30006
+            - name: heimdall-port
+              port: 443 # Host port
+              targetPort: 443 # Pod port
+              nodePort: 30007
+          selector: #Label selector used to identify pods
+            app: plex
+          type: NodePort
+          
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: radarr-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+              - name: radarr
+                image: lscr.io/linuxserver/radarr:5.16.3.9541-ls252
+                imagePullPolicy: Always
+                ports:
+                - containerPort: 7878
+                volumeMounts:
+                - mountPath: /config
+                  name: radarr-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              volumes:
+              - name: radarr-config
+                hostPath:
+                  path: /home/server/docker/radarr/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+                  
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: sonarr-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+              - name: sonarr
+                image: lscr.io/linuxserver/sonarr:4.0.11.2680-ls263
+                imagePullPolicy: Always
+                ports:
+                - containerPort: 8989
+                volumeMounts:
+                - mountPath: /config
+                  name: sonarr-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              volumes:
+              - name: sonarr-config
+                hostPath:
+                  path: /home/server/docker/sonarr/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+                  
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: jackett-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+              - name: jackett
+                image: lscr.io/linuxserver/jackett:v0.22.1182-ls632
+                imagePullPolicy: Always
+                ports:
+                - containerPort: 9117
+                volumeMounts:
+                - mountPath: /config
+                  name: jackett-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              volumes:
+              - name: jackett-config
+                hostPath:
+                  path: /home/server/docker/jackett/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+                  
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: qbit-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              securityContext:
+                sysctls:
+                - name: net.ipv4.conf.all.src_valid_mark
+                  value: "1"
+                - name: net.ipv6.conf.all.disable_ipv6
+                  value: "1"
+              initContainers:
+              - name: clean-wg0 
+              image: hotio/qbittorrent
+              command: ["/bin/sh", "-c", "ip link delete wg0 || true"]
+              containers:
+              - env:
+                - name: PRIVOXY_ENABLED
+                  value: "false"
+                - name: UNBOUND_ENABLED
+                  value: "false"
+                - name: VPN_AUTO_PORT_FORWARD
+                  value: "false"
+                - name: VPN_AUTO_PORT_FORWARD_TO_PORTS
+                - name: VPN_CONF
+                  value: wg0
+                - name: VPN_ENABLED
+                  value: "true"
+                - name: VPN_FIREWALL_TYPE
+                  value: auto
+                - name: VPN_HEALTHCHECK_ENABLED
+                  value: "true"
+                - name: VPN_KEEP_LOCAL_DNS
+                  value: "false"
+                - name: VPN_LAN_LEAK_ENABLED
+                  value: "false"
+                - name: VPN_LAN_NETWORK
+                  value: 192.168.1.0/24
+                - name: VPN_PROVIDER
+                  value: generic
+                image: hotio/qbittorrent
+                imagePullPolicy: Always
+                name: qbittorrent
+                resources:
+                securityContext:
+                  capabilities:
+                    add:
+                    - NET_ADMIN
+              hostname: hotio-qbit
+              restartPolicy: Always
+              serviceAccountName: ""
+                ports:
+                - protocol: TCP
+                  containerPort: 8080
+                - protocol: TCP
+                  containerPort: 6881
+                - protocol: UDP
+                  containerPort: 6881
+                volumeMounts:
+                - mountPath: /config
+                  name: qbit-config
+                - mountPath: /mnt/Media
+                  name: movies-shows-raid
+                - mountPath: /downloads
+                  name: torrent-downloads
+              volumes:
+              - name: qbit-config
+                hostPath:
+                  path: /home/server/docker/qbittorrent/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+                  
+        ---
+        apiVersion: apps/v1    #kubectl api-resources | grep {kind}
+        kind: Deployment
+        metadata:
+          name: heimdall-plex-deployment
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          replicas: 1
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 2
+              maxUnavailable: 1
+          selector:
+            matchLabels:
+                app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+              - name: heimdall
+                image: linuxserver/heimdall:v2.6.3-ls294
+                imagePullPolicy: Always
+                ports:
+                - containerPort: 443
+                volumeMounts:
+                - mountPath: /config
+                  name: heimdall-config
+              volumes:
+              - name: heimdall-config
+                hostPath:
+                  path: /home/server/docker/heimdall/config
+                  type: Directory
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+              - name: torrent-downloads
+                hostPath:
+                  path: /downloads
+                  type: Directory
+
+    - name: Changing file permissions
+      shell: |
+        sudo chown server:server "/home/{{ username }}/K8-Deployment.yaml"
+      
+    - name: apt update
+      apt:
+        upgrade: yes
+
+    - name: Initialize Kubernetes cluster using kubeadm
+      command: kubeadm init
+      register: kubeadm_init_output
+      changed_when: "'This node has joined the cluster' not in kubeadm_init_output.stdout"
+    
+    - name: Create the .kube directory in the user's home
+      file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0700'
+
+    - name: Copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+    
+    - name: Add Kubernetes bash completion to .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: "source /usr/share/bash-completion/bash_completion"
+        create: yes
+        state: present
+      notify:
+        - Reload bashrc
+
+    - name: Add kubectl completion to .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: "source <(kubectl completion bash)"
+        create: yes
+        state: present
+      notify:
+        - Reload bashrc
+
+    - name: Add alias for kubectl to .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: "alias k=kubectl"
+        create: yes
+        state: present
+      notify:
+        - Reload bashrc
+
+    - name: Add kubectl autocomplete to .bashrc
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: "complete -o default -F __start_kubectl k"
+        create: yes
+        state: present
+      notify:
+        - Reload bashrc
+
+  handlers:
+    - name: Reload bashrc
+      shell: "source {{ ansible_env.HOME }}/.bashrc"
+      ignore_errors: yes
+
+    - debug:
+        var: shell_result.stdout_lines
