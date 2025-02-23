@@ -1,11 +1,11 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 1/2/2025
+# Last edited on: 2/22/2025
 # Educational purposes only
 # ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
-# Microk8s install with configuration and mounting. For Ubuntu 22.04 Server
+# k8s install with configuration and mounting. For Ubuntu 22.04 Server
 
 - hosts: all
   connection: local
@@ -82,7 +82,7 @@
       shell: curl -sfL https://get.k3s.io | sh -
       register: shell_result
 
-    - name: Creating K8 environment (installing Microk8s)
+    - name: Creating K8 environment
       shell: |
         sudo swapoff -a
         sudo chown -f -R "{{ username }}" ~/.kube
