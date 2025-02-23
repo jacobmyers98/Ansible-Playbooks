@@ -177,7 +177,7 @@
             spec:
               containers:
               - name: radarr
-                image: lscr.io/linuxserver/radarr:5.16.3.9541-ls252
+                image: lscr.io/linuxserver/radarr:5.18.4.9674-LS260
                 imagePullPolicy: Always
                 ports:
                 - containerPort: 7878
@@ -227,7 +227,7 @@
             spec:
               containers:
               - name: sonarr
-                image: lscr.io/linuxserver/sonarr:4.0.11.2680-ls263
+                image: lscr.io/linuxserver/sonarr:4.0.13.2932-LS272
                 imagePullPolicy: Always
                 ports:
                 - containerPort: 8989
@@ -277,7 +277,7 @@
             spec:
               containers:
               - name: jackett
-                image: lscr.io/linuxserver/jackett:v0.22.1182-ls632
+                image: lscr.io/linuxserver/jackett:v0.22.1450-LS685
                 imagePullPolicy: Always
                 ports:
                 - containerPort: 9117
@@ -385,6 +385,9 @@
                   name: movies-shows-raid
                 - mountPath: /downloads
                   name: torrent-downloads
+                - name: qbitconfigmap
+                  mountPath: /config/wireguard/wg0.conf
+                  subPath: wg0.conf
               volumes:
               - name: qbit-config
                 hostPath:
@@ -398,7 +401,31 @@
                 hostPath:
                   path: /downloads
                   type: Directory
-                  
+              - name: movies-shows-raid
+                hostPath:
+                  path: /mnt/Media
+                  type: Directory
+        ---
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: qbit-configmap
+          namespace: plex
+        data:
+          wg0.conf: |
+            #  TorGuard WireGuard Config
+            [Interface]
+            PrivateKey = CHANGEME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            ListenPort = 59126
+            MTU = 1390
+            DNS = 1.1.1.1
+            Address = 10.13.114.221/24
+
+            [Peer]
+            PublicKey = CHANGEME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            AllowedIPs = 0.0.0.0/0
+            Endpoint = 146.70.49.82:1443
+            PersistentKeepalive = 25
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -424,7 +451,7 @@
             spec:
               containers:
               - name: heimdall
-                image: linuxserver/heimdall:v2.6.3-ls294
+                image: linuxserver/heimdall:v2.6.3-ls301
                 imagePullPolicy: Always
                 ports:
                 - containerPort: 443
