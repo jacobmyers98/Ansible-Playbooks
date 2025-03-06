@@ -1,7 +1,7 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 2/22/2025
+# Last edited on: 3/6/2025
 # Educational purposes only
 # ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
@@ -64,6 +64,35 @@
       path: /etc/samba/smb.conf
       regexp: '^Line1'
       line: 'Line1 has changed'
+      
+    - name: Install containerd
+      package:
+        name: containerd
+        state: present
+
+    - name: Create containerd configuration directory
+      file:
+        path: /etc/containerd
+        state: directory
+        mode: '0755'
+
+    - name: Generate default containerd configuration
+      command: containerd config default > /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
+      
+    - name: Update SystemdCgroup value in /etc/containerd/config.toml
+      replace:
+        path: /etc/containerd/config.toml
+        regexp: '(SystemdCgroup\s*=\s*)false'
+        replace: '\1true'
+      notify: Restart containerd
+
+  handlers:
+    - name: Restart containerd
+      service:
+        name: containerd
+        state: restarted
 
     - name: Check for the Docker user
       ansible.builtin.stat:
@@ -95,6 +124,22 @@
         kubectl get all --all-namespaces
         kubectl config set-context --current --namespace=plex
       debugger: always
+      
+    - name: Install k9s
+      get_url:
+        url: https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz
+        dest: /tmp/k9s.tar.gz
+
+    - name: Extract k9s binary
+      unarchive:
+        src: /tmp/k9s.tar.gz
+        dest: /usr/local/bin/
+        remote_src: yes
+
+    - name: Ensure k9s is executable
+      file:
+        path: /usr/local/bin/k9s
+        mode: '0755'
 
     - name: Creating K8s file (deployment)
       copy:
