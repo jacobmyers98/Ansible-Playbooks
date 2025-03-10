@@ -49,7 +49,7 @@
           - kubelet
           - kubeadm
           - kubectl
-    - samba
+          - samba
         state: present
 
     - name: Hold Kubernetes packages
