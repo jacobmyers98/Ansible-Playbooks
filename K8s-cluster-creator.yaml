@@ -88,6 +88,25 @@
         replace: '\1true'
       notify: Restart containerd
 
+    - name: Install Helm
+      get_url:
+        url: https://get.helm.sh/helm-latest-linux-amd64.tar.gz
+        dest: /tmp/helm.tar.gz
+
+    - name: Extract Helm binary
+      unarchive:
+        src: /tmp/helm.tar.gz
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Move Helm binary to /usr/local/bin/
+      command: mv /tmp/linux-amd64/helm /usr/local/bin/helm
+
+    - name: Ensure Helm is executable
+      file:
+        path: /usr/local/bin/helm
+        mode: '0755'
+
   handlers:
     - name: Restart containerd
       service:
