@@ -1,7 +1,7 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 3/6/2025
+# Last edited on: 3/12/2025
 # Educational purposes only
 # ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
 
@@ -377,9 +377,37 @@
                 - name: net.ipv6.conf.all.disable_ipv6
                   value: "1"
               initContainers:
-              - name: clean-wg0 
-              image: hotio/qbittorrent
-              command: ["/bin/sh", "-c", "ip link delete wg0 || true"]
+                - name: file-transfer
+                  image: busybox
+                  command:
+                    - sh
+                    - "-c"
+                    - |
+                      cp -r /host/. /data/  # Copy everything from hostPath to emptyDir
+                      chown -R 1000:1000 /data  # Change ownership (if needed)
+                      ip route add 10.244.0.0/16 dev eth0 scope link src $(ip -o -4 addr show dev eth0 | awk '{print $4}' | cut -d/ -f1) proto kernel
+                  securityContext:
+                    capabilities:
+                      add:
+                      - NET_ADMIN
+                  volumeMounts:
+                    - name: host-data
+                      mountPath: /host  # Mount hostPath as /host inside the container
+                    - name: shared-storage
+                      mountPath: /data
+                - name: copy-data
+                  image: busybox
+                  command:
+                    - sh
+                    - "-c"
+                    - |
+                      cp -r /host-data/. /data/  # Copy everything, including hidden files
+                      chown -R 1000:1000 /data  # Change ownership
+                  volumeMounts:
+                    - name: data-source
+                      mountPath: /host-data  # Mount hostPath for /data
+                    - name: data-storage
+                      mountPath: /data  # Mount emptyDir for /data
               containers:
               - env:
                 - name: PRIVOXY_ENABLED
@@ -424,24 +452,31 @@
                 - protocol: UDP
                   containerPort: 6881
                 volumeMounts:
-                - mountPath: /config
-                  name: qbit-config
-                - mountPath: /mnt/Media
-                  name: movies-shows-raid
+                - name: shared-storage
+                  mountPath: /config
+                - name: data-storage
+                  mountPath: /data
                 - mountPath: /downloads
                   name: torrent-downloads
                 - name: qbitconfigmap
                   mountPath: /config/wireguard/wg0.conf
                   subPath: wg0.conf
+              hostname: hotio-qbit
+              restartPolicy: Always
+              serviceAccountName: ""
               volumes:
-              - name: qbit-config
+              - name: host-data
                 hostPath:
-                  path: /home/server/docker/qbittorrent/config
+                  path: /home/server/docker/qbittorrent/config/config/  # Correct host path
                   type: Directory
-              - name: movies-shows-raid
+              - name: data-source
                 hostPath:
-                  path: /mnt/Media
+                  path: /home/server/docker/qbittorrent/config/data/  # Host source for /data
                   type: Directory
+              - name: shared-storage
+                emptyDir: {}
+              - name: data-storage
+                emptyDir: {}
               - name: torrent-downloads
                 hostPath:
                   path: /downloads
