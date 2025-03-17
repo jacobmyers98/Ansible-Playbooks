@@ -1,9 +1,9 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 3/12/2025
+# Last edited on: 3/16/2025
 # Educational purposes only
-# ansible-playbook -Kb -i inventory.ini ./k8_build.yml --connection=localhost
+# ansible-playbook -Kb -i inventory.ini ./K8s-cluster-creator.yaml --connection=localhost
 
 # k8s install with configuration and mounting. For Ubuntu 22.04 Server
 
