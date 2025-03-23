@@ -252,25 +252,7 @@
           selector: #Label selector used to identify pods
             app: qbittorrent
           type: NodePort
-        
-        --- 
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: port-service-heimdall
-          namespace: plex
-          labels:
-            app: heimdall
-        spec:
-          ports:
-            - name: heimdall-port
-              port: 443 # Host port
-              targetPort: 443 # Pod port
-              nodePort: 30007
-          selector: #Label selector used to identify pods
-            app: heimdall
-          type: NodePort
-        
+          
         ---
         apiVersion: v1
         kind: Service
