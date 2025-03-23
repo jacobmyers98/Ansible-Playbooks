@@ -175,27 +175,68 @@
         apiVersion: v1
         kind: Service
         metadata:
-          name: port-service
+          name: port-service-radarr
           namespace: plex
           labels:
-            app: plex
+            app: radarr
         spec:
           ports:
             - name: radarr-port
               port: 7878
               targetPort: 7878
               nodePort: 30001
+          selector: #Label selector used to identify pods
+            app: radarr
+          type: NodePort
+        
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-sonarr
+          namespace: plex
+          labels:
+            app: sonarr
+        spec:
+          ports:
             - name: sonarr-port
               port: 8989
               targetPort: 8989
               nodePort: 30002
+          selector: #Label selector used to identify pods
+            app: sonarr
+          type: NodePort
+
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-jackett
+          namespace: plex
+          labels:
+            app: jackett
+        spec:
+          ports:
             - name: jackett-port
               port: 9117
               targetPort: 9117
               nodePort: 30003
+          selector: #Label selector used to identify pods
+            app: jackett
+          type: NodePort
+          ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-qbit
+          namespace: plex
+          labels:
+            app: qbittorrent
+        spec:
+          ports:
             - name: qbittorrent-port
               protocol: TCP
-              port: 82
+              port: 8080
               targetPort: 8080
               nodePort: 30004
             - name: qbittorrent-port2
@@ -208,14 +249,46 @@
               port: 6881
               targetPort: 6881
               nodePort: 30006
+          selector: #Label selector used to identify pods
+            app: qbittorrent
+          type: NodePort
+        
+        --- 
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-heimdall
+          namespace: plex
+          labels:
+            app: heimdall
+        spec:
+          ports:
             - name: heimdall-port
               port: 443 # Host port
               targetPort: 443 # Pod port
               nodePort: 30007
           selector: #Label selector used to identify pods
-            app: plex
+            app: heimdall
           type: NodePort
-          
+        
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-homarr
+          namespace: plex
+          labels:
+            app: homarr
+        spec:
+          ports:
+            - name: homarr-port
+              port: 7575 # Host port
+              targetPort: 7575 # Pod port
+              nodePort: 30010
+          selector: #Label selector used to identify pods
+            app: homarr
+          type: NodePort
+        
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -223,7 +296,7 @@
           name: radarr-plex-deployment
           namespace: plex
           labels:
-            app: plex
+            app: radarr
         spec:
           replicas: 1
           strategy:
@@ -233,11 +306,11 @@
               maxUnavailable: 1
           selector:
             matchLabels:
-                app: plex
+                app: radarr
           template:
             metadata:
               labels:
-                app: plex
+                app: radarr
             spec:
               containers:
               - name: radarr
@@ -273,7 +346,7 @@
           name: sonarr-plex-deployment
           namespace: plex
           labels:
-            app: plex
+            app: sonarr
         spec:
           replicas: 1
           strategy:
@@ -283,11 +356,11 @@
               maxUnavailable: 1
           selector:
             matchLabels:
-                app: plex
+                app: sonarr
           template:
             metadata:
               labels:
-                app: plex
+                app: sonarr
             spec:
               containers:
               - name: sonarr
@@ -315,7 +388,7 @@
                 hostPath:
                   path: /downloads
                   type: Directory
-                  
+        
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
@@ -323,7 +396,7 @@
           name: jackett-plex-deployment
           namespace: plex
           labels:
-            app: plex
+            app: jackett
         spec:
           replicas: 1
           strategy:
@@ -333,11 +406,11 @@
               maxUnavailable: 1
           selector:
             matchLabels:
-                app: plex
+                app: jackett
           template:
             metadata:
               labels:
-                app: plex
+                app: jackett
             spec:
               containers:
               - name: jackett
@@ -373,7 +446,7 @@
           name: qbit-plex-deployment
           namespace: plex
           labels:
-            app: plex
+            app: qbittorrent
         spec:
           replicas: 1
           strategy:
@@ -383,11 +456,11 @@
               maxUnavailable: 1
           selector:
             matchLabels:
-                app: plex
+                app: qbittorrent
           template:
             metadata:
               labels:
-                app: plex
+                app: qbittorrent
             spec:
               securityContext:
                 sysctls:
@@ -529,10 +602,10 @@
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: heimdall-plex-deployment
+          name: homarr-plex-deployment
           namespace: plex
           labels:
-            app: plex
+            app: homarr
         spec:
           replicas: 1
           strategy:
@@ -542,33 +615,43 @@
               maxUnavailable: 1
           selector:
             matchLabels:
-                app: plex
+                app: homarr
           template:
             metadata:
               labels:
-                app: plex
+                app: homarr
             spec:
               containers:
-              - name: heimdall
-                image: linuxserver/heimdall:v2.6.3-ls301
+              - name: homarr
+                image: ghcr.io/ajnart/homarr:latest
                 imagePullPolicy: Always
                 ports:
-                - containerPort: 443
+                - containerPort: 7575
                 volumeMounts:
-                - mountPath: /config
-                  name: heimdall-config
+                - mountPath: /app/data/configs
+                  name: homarr-config
+                - mountPath: /app/public/icons
+                  name: homarr-icons
+                - mountPath: /data
+                  name: homarr-data
+                - mountPath: /app/public/imgs/backgrounds
+                  name: homarr-imgs
               volumes:
-              - name: heimdall-config
+              - name: homarr-config
                 hostPath:
-                  path: /home/server/docker/heimdall/config
+                  path: /home/server/docker/homarr/config
                   type: Directory
-              - name: movies-shows-raid
+              - name: homarr-icons
                 hostPath:
-                  path: /mnt/Media
+                  path: /home/server/docker/homarr/icons
                   type: Directory
-              - name: torrent-downloads
+              - name: homarr-data
                 hostPath:
-                  path: /downloads
+                  path: /home/server/docker/homarr/data
+                  type: Directory
+              - name: homarr-imgs
+                hostPath:
+                  path: /home/server/docker/homarr/imgs
                   type: Directory
 
     - name: Changing file permissions
