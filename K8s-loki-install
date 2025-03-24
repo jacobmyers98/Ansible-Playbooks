@@ -1,0 +1,24 @@
+---
+
+# Author: Jacob M
+# Last edited on: 3/23/2025
+# Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./K8s-loki-install.yaml --connection=localhost
+
+# k8s grafana install and configuration. For Ubuntu 22.04 Server
+# USE THIS AFTER THE GRAFANA INSTALL
+# YOU MIGHT NEED TO EDIT THE URL IF LOGS CANT CONNECT TO URL
+
+
+- name: Deploy Loki with Helm
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add Loki Helm repository
+      command: helm repo add grafana https://grafana.github.io/helm-charts
+
+    - name: Install Loki
+      command: helm install loki grafana/loki-stack
+
+    - name: Install Promtail, the log forwarder 
+      command: helm install promtail grafana/promtail
