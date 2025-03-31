@@ -57,8 +57,8 @@
             kubeApiserverBurnrate: true
             kubeApiserverHistogram: true
             kubeApiserverSlos: true
-            kubelet: true
-            kubeProxy: true
+            kubelet: false
+            kubeProxy: false
             kubePrometheusGeneral: true
             kubePrometheusNodeRecording: true
             kubernetesApps: true
@@ -93,6 +93,37 @@
             existingSecret: grafana-admin-credentials
             userKey: admin-user
             passwordKey: admin-password
+          additionalDataSources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus-operated.monitoring.svc:9090
+              isDefault: true
+              jsonData:
+                timeInterval: "30s"
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki.monitoring.svc:3100
+              isDefault: false
+          persistence:
+            enabled: false
+          extraVolumes:
+            - name: grafana-storage
+              hostPath:
+                path: /home/server/docker/monitoring/grafana
+                type: DirectoryOrCreate
+          extraVolumeMounts:
+            - name: grafana-storage
+              mountPath: /grafana-data
+              subPath: ""
+        
+        grafana.ini:
+          paths:
+            data: /grafana-data
+            logs: /var/log/grafana
+            plugins: /grafana-data/plugins
+            provisioning: /etc/grafana/provisioning
 
         kubeApiServer:
           enabled: true
