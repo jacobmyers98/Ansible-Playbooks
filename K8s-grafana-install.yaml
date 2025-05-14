@@ -41,7 +41,7 @@
 
     - name: Create empty values.yaml for customization
       copy:
-        dest: "./prometheus-values.yaml"
+        dest: "./grafana-values.yaml"
         content: |
         fullnameOverride: prometheus
 
@@ -252,7 +252,7 @@
 
     - name: Create empty nodeport-forward.yaml for customization
       copy:
-        dest: "./nodeport-forward.yaml"
+        dest: "./grafana-nodeport.yaml"
         content: |
         apiVersion: v1
         kind: Service
@@ -272,7 +272,7 @@
 
     - name: Create empty storageclass.yaml for customization
       copy:
-        dest: ""./storageclass.yaml"
+        dest: ""./grafana-storageclass.yaml"
         content: |
         apiVersion: storage.k8s.io/v1
         kind: StorageClass
@@ -282,11 +282,11 @@
         volumeBindingMode: WaitForFirstConsumer
 
     - name: Applies the Storageclass
-      command: kubectl create -f ./storageclass.yaml
+      command: kubectl create -f ./grafana-storageclass.yaml
 
     - name: Install Prometheus using Helm
-      command: helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f prometheus-values.yaml
+      command: helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f grafana-values.yaml
 
     - name: Forwards the port to nodePort 30008
-      command: kubectl create -f ./nodeport-forward.yaml
+      command: kubectl create -f ./grafana-nodeport.yaml
 
