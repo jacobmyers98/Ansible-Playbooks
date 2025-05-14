@@ -1,0 +1,163 @@
+---
+
+# Author: Jacob M
+# Last edited on: 5/13/2025
+# Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./K8s-loki-install.yaml --connection=localhost
+
+# k8s grafana install and configuration. For Ubuntu 22.04 Server
+# 
+#
+#
+
+
+- name: Deploy Mosquitto with Helm
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add Mosquitto Helm repository
+      command: helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
+
+    - name: Update Helm repositories
+      command: helm repo update
+
+    - name: Create teslamate namespace
+      command: kubectl create namespace teslamate
+      args:
+        creates: /tmp/namespace_created
+
+    - name: Install Mosquitto
+      command: helm install -n teslamate mosquitto t3n/mosquitto
+
+    - name: Create empty values.yaml for customization
+          copy:
+            dest: "./teslamate-values.yaml"
+            content: |
+            #
+            # IMPORTANT NOTE
+            #
+            # This chart inherits from our common library chart. You can check the default values/options here:
+            # https://github.com/geek-cookbook/library-charts/tree/main/charts/stable/common/values.yaml
+            #
+            
+            image:
+              # -- image repository
+              repository: teslamate/teslamate
+              # -- image tag
+              tag: 1.33.0
+              # -- image pull policy
+              pullPolicy: IfNotPresent
+            
+            # -- environment variables. See [teslamate docs](https://docs.teslamate.org/docs/configuration/environment_variables) for more details.
+            # @default -- See below
+            env:
+              # -- Set the container timezone
+              TZ: UTC
+              # -- Postgres database hostname
+              DATABASE_HOST: '{{ include "common.names.fullname" .}}-postgresql'
+              # -- Postgres database user name
+              DATABASE_USER: postgres
+              # -- Postgres database password
+              DATABASE_PASS: "{{ .Values.postgresql.auth.postgresPassword }}"
+              # -- Postgres database password
+              DATABASE_NAME: "{{ .Values.postgresql.auth.database }}"
+              # -- Disables the MQTT feature if `true'
+              ENCRYPTION_KEY: "hrIYHzBUIlk68YSGqUQUcHTr50pU4a4OxifgR+zJl23MwPnBVFEL9nljgMg2MCKB"
+              DISABLE_MQTT: "false"
+              MQTT_HOST: "mosquitto"
+            
+            # -- Configures service settings for the chart.
+            # @default -- See values.yaml
+            service:
+              main:
+                ports:
+                  http:
+                    port: 4000
+            
+            ingress:
+              # -- Enable and configure ingress settings for the chart under this key.
+              # @default -- See values.yaml
+              main:
+                enabled: false
+            
+            # -- Configure persistence settings for the chart under this key.
+            # @default -- See values.yaml
+            persistence:
+              import:
+                enabled: true
+                accessMode: ReadWriteOnce
+                size: 10Gi
+            
+            # -- Enable and configure postgresql database subchart under this key.
+            #    For more options see [postgresql chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/postgresql)
+            # @default -- See values.yaml
+            postgresql:
+              enabled: true
+              auth:
+                postgresPassword: teslamate-pass
+                database: teslamate
+              primary:
+                persistence:
+                  enabled: false
+                    # storageClass: ""
+                    # size: 8Gi
+
+    - name: Create PV for teslamate
+          copy:
+            dest: "./teslamate-pv.yaml"
+            content: |
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: teslamate-pv
+            spec:
+              capacity:
+                storage: 10Gi  # Adjust the storage size as needed
+              accessModes:
+                - ReadWriteOnce
+              persistentVolumeReclaimPolicy: Retain
+              storageClassName: local-storage
+              volumeMode: Filesystem
+              local:
+                path: /home/server/docker/tesla/config/
+              nodeAffinity:
+                required:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - gameserver
+
+
+    - name: Create Nodeport for teslamate
+          copy:
+            dest: "./teslamate-nodeport.yaml"
+            content: |
+            apiVersion: v1
+            kind: Service
+            metadata:
+              name: port-service-teslamate
+              namespace: teslamate
+              labels:
+                name: teslamate
+            spec:
+              ports:
+                - name: teslamate-port
+                  port: 4000
+                  targetPort: 4000
+                  nodePort: 30012
+              selector: #Label selector used to identify pods
+                app.kubernetes.io/instance: teslamate
+                app.kubernetes.io/name: teslamate
+              type: NodePort
+
+
+    - name: Applies the PV
+      command: kubectl create -f ./teslamate-pv.yaml.yaml
+
+    - name: Install Prometheus using Helm
+      command: helm install -n teslamate teslamate t3n/teslamate -f ./teslamate-values.yaml
+
+    - name: Forwards the port to nodePort 30012
+      command: kubectl create -f ./teslamate-nodeport.yaml
