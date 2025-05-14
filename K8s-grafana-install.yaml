@@ -41,7 +41,7 @@
 
     - name: Create empty values.yaml for customization
       copy:
-        dest: "./values.yaml"
+        dest: "./prometheus-values.yaml"
         content: |
         fullnameOverride: prometheus
 
@@ -285,7 +285,7 @@
       command: kubectl create -f ./storageclass.yaml
 
     - name: Install Prometheus using Helm
-      command: helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
+      command: helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f prometheus-values.yaml
 
     - name: Forwards the port to nodePort 30008
       command: kubectl create -f ./nodeport-forward.yaml
