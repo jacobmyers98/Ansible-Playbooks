@@ -1,0 +1,81 @@
+---
+
+# Author: Jacob M
+# Last edited on: 5/13/2025
+# Educational purposes only
+# ansible-playbook -Kb -i inventory.ini ./K8s-loki-install.yaml --connection=localhost
+
+# k8s grafana install and configuration. For Ubuntu 22.04 Server
+# 
+#
+#
+
+
+
+    - name: Create Huginn web scraper yaml
+          copy:
+            dest: "./huginn.yaml"
+            content: |
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scraper
+  labels:
+    name: scraper
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: huginn-nodeport
+  namespace: scraper
+  labels:
+    app: huginn
+spec:
+  type: NodePort
+  ports:
+    - name: huginn-port
+      port: 3000          # Internal service port
+      targetPort: 3000  # Container port in the pod
+      nodePort: 30009
+  selector: #Label selector used to identify pods
+    app: huginn
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: huginn
+  name: huginn
+  namespace: scraper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: huginn
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: huginn
+    spec:
+      containers:
+      - image: huginn/huginn
+        name: huginn
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: huginn-config
+      volumes:
+      - name: huginn-config
+        hostPath:
+          path: /home/server/docker/huginn/config
+          type: Directory
+
+    - name: Applies the huginn file
+      command: kubectl create -f ./huginn.yaml
