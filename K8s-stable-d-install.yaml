@@ -1,0 +1,73 @@
+- name: Deploy stable diffusion
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add the Nvidia GPU pods
+      command: kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.14.0/nvidia-device-plugin.yml
+
+    - name: Create ai namespace
+      command: kubectl create namespace ai
+      args:
+        creates: /tmp/namespace_created
+
+    - name: Create empty values.yaml for customization
+          copy:
+            dest: "./stable-diffusion-values.yaml"
+            content: |
+            ---
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: stable-diffusion
+              namespace: ai
+            spec:
+              replicas: 1
+              selector:
+                matchLabels:
+                  app: stable-diffusion
+              template:
+                metadata:
+                  labels:
+                    app: stable-diffusion
+                spec:
+                  containers:
+                    - name: sd-webui
+                      image: ghcr.io/your-org/stable-diffusion-webui:latest
+                      ports:
+                        - containerPort: 7860
+                      volumeMounts:
+                        - mountPath: /data
+                          name: sd-data
+                      resources:
+                        limits:
+                          nvidia.com/gpu: 1
+                  volumes:
+                    - name: sd-data
+                      hostPath:
+                        path: /home/server/docker/stable-diffusion/config
+                        type: DirectoryOrCreate
+            ---
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: nvidia-device-plugin-config
+              namespace: kube-system
+            data:
+              config.json: |
+                {
+                  "sharing": {
+                    "timeSlicing": {
+                      "resources": [
+                        {
+                          "name": "nvidia.com/gpu",
+                          "replicas": 2
+                        }
+                      ]
+                    }
+                  }
+                }
+
+    - name: adds the Multi-Instance-GPU
+      command: sudo nvidia-smi -mig 1 && sudo nvidia-smi mig -cgi 0,0 -C
+
+ 
