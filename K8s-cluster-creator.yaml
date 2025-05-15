@@ -270,6 +270,24 @@
           selector: #Label selector used to identify pods
             app: homarr
           type: NodePort
+          
+       ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: port-service-plex
+          namespace: plex
+          labels:
+            app: plex
+        spec:
+          ports:
+            - name: plex-port
+              port: 32400 # Host port
+              targetPort: 32400 # Pod port
+              nodePort: 30013
+          selector: #Label selector used to identify pods
+            app: homarr
+          type: NodePort
         
         ---
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
@@ -635,6 +653,54 @@
                 hostPath:
                   path: /home/server/docker/homarr/imgs
                   type: Directory
+                  
+        ---
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: plex
+          namespace: plex
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: plex
+          template:
+            metadata:
+              labels:
+                app: plex
+            spec:
+              containers:
+                - name: plex
+                  image: linuxserver/plex:latest
+                  ports:
+                    - containerPort: 32400
+                  env:
+                    - name: PUID
+                      value: "1000"
+                    - name: PGID
+                      value: "1000"
+                    - name: VERSION
+                      value: "docker"
+                  volumeMounts:
+                    - mountPath: /config
+                      name: plex-config
+                    - mountPath: /data
+                      name: media-data
+                  resources:
+                    limits:
+                      nvidia.com/gpu: 1
+              volumes:
+                - name: plex-config
+                  hostPath:
+                    path: /home/server/docker/plex/config
+                    type: DirectoryOrCreate
+                - name: media-data
+                  hostPath:
+                    path: /mnt/Media
+                    type: Directory
+
+
 
     - name: Changing file permissions
       shell: |
