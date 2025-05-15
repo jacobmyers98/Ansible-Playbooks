@@ -3,11 +3,9 @@
 # Author: Jacob M
 # Last edited on: 5/13/2025
 # Educational purposes only
-# ansible-playbook -Kb -i inventory.ini ./K8s-loki-install.yaml --connection=localhost
+# ansible-playbook -Kb -i inventory.ini ./K8s-trivy-install.yaml --connection=localhost
 
-# k8s grafana install and configuration. For Ubuntu 22.04 Server
-# USE THIS AFTER THE GRAFANA INSTALL
-# YOU MIGHT NEED TO EDIT THE URL IF LOGS CANT CONNECT TO URL
+# k8s trivy install and configuration. For Ubuntu 22.04 Server
 
 
 - name: Deploy trivy vulnerability scanner with helm
