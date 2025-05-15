@@ -3,12 +3,9 @@
 # Author: Jacob M
 # Last edited on: 5/13/2025
 # Educational purposes only
-# ansible-playbook -Kb -i inventory.ini ./K8s-loki-install.yaml --connection=localhost
+# ansible-playbook -Kb -i inventory.ini ./K8s-teslamate-install.yaml --connection=localhost
 
-# k8s grafana install and configuration. For Ubuntu 22.04 Server
-# 
-#
-#
+# k8s Teslamate install and configuration. For Ubuntu 22.04 Server
 
 
 - name: Deploy Mosquitto with Helm
