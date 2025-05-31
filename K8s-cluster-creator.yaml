@@ -286,7 +286,7 @@
               targetPort: 32400 # Pod port
               nodePort: 30013
           selector: #Label selector used to identify pods
-            app: homarr
+            app: plex
           type: NodePort
         
         ---
