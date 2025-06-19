@@ -53,21 +53,20 @@
               name: nvidia-device-plugin-config
               namespace: kube-system
             data:
-              config.json: |
-                {
-                  "sharing": {
-                    "timeSlicing": {
-                      "resources": [
-                        {
-                          "name": "nvidia.com/gpu",
-                          "replicas": 2
-                        }
-                      ]
-                    }
-                  }
-                }
-
-    - name: adds the Multi-Instance-GPU
-      command: sudo nvidia-smi -mig 1 && sudo nvidia-smi mig -cgi 0,0 -C
-
+              config.yaml: |
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: nvidia-time-slice-cfg
+                  namespace: kube-system
+                data:
+                  time-slicing.yaml: |
+                    version: v1
+                    flags:
+                      gfdEnabled: false
+                    sharing:
+                      timeSlicing:
+                        resources:
+                          - name: nvidia.com/gpu
+                            replicas: 2
  
