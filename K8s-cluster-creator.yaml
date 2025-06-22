@@ -293,7 +293,7 @@
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: radarr-plex-deployment
+          name: radarr
           namespace: plex
           labels:
             app: radarr
@@ -343,7 +343,7 @@
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: sonarr-plex-deployment
+          name: sonarr
           namespace: plex
           labels:
             app: sonarr
@@ -393,7 +393,7 @@
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: jackett-plex-deployment
+          name: jackett
           namespace: plex
           labels:
             app: jackett
@@ -443,7 +443,7 @@
         apiVersion: apps/v1    #kubectl api-resources | grep {kind}
         kind: Deployment
         metadata:
-          name: qbit-plex-deployment
+          name: qbit
           namespace: plex
           labels:
             app: qbittorrent
