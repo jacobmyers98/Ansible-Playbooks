@@ -1,7 +1,7 @@
 ---
 
 # Author: Jacob M
-# Last edited on: 5/13/2025
+# Last edited on: 6/23/2025
 # Educational purposes only
 # ansible-playbook -Kb -i inventory.ini ./K8s-trivy-install.yaml --connection=localhost
 
@@ -18,4 +18,11 @@
         helm repo update
         helm install trivy-operator aqua/trivy-operator \
            --namespace trivy-system \
-           --create-namespace
+           --create-namespace \
+           --set compliance.enabled=true
+
+# Commmands
+# kubectl delete clustercompliancereport --all trigger rescan
+# kubectl get vulnerabilityreports --all-namespaces -o wide
+# kubectl get configauditreports --all-namespaces -o wide
+# kubectl logs -n trivy-system deployment/trivy-operator
