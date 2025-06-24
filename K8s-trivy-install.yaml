@@ -19,7 +19,9 @@
         helm install trivy-operator aqua/trivy-operator \
            --namespace trivy-system \
            --create-namespace \
-           --set compliance.enabled=true
+           --set compliance.enabled=true \
+           --set metrics.enabled=true \
+           --set prometheus.serviceMonitor.enabled=true
 
 # Commmands
 # kubectl delete clustercompliancereport --all trigger rescan
